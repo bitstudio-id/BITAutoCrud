@@ -12,5 +12,8 @@
 */
 
 Route::get('/', function () {
+    return redirect('/bit');
+});
+Route::get('/bit', function () {
     return view('welcome');
 });
