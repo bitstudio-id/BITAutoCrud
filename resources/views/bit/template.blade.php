@@ -7,23 +7,25 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/ico" href="/img/favicon.ico" sizes="any" />
     <title>{{env('APP_NAME')}}</title>
-    @include('bit.layout.css')
+    @include('bit.layouts.css')
 </head>
 <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
-@include('bit.layout.header')
+@include('bit.layouts.header')
 <div class="app-body">
-    @include('bit.layout.sidebar')
+    @include('bit.layouts.sidebar')
     <main class="main">
-        @include('bit.layout.breadcrumb')
+        @include('bit.layouts.breadcrumb')
         <div class="container-fluid">
             <div class="animated fadeIn">
-                @yield('content')
+                <div id="ui-view">
+                    @yield('content')
+                </div>
             </div>
         </div>
     </main>
-    @include('bit.layout.aside')
+    @include('bit.layouts.aside')
 </div>
-@include('bit.layout.footer')
-@include('bit.layout.js')
+@include('bit.layouts.footer')
+@include('bit.layouts.js')
 </body>
 </html>
