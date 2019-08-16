@@ -17,3 +17,9 @@ Route::get('/', function () {
 Route::get('/bit', function () {
     return view('welcome');
 });
+Route::get('/test', function () {
+    $exitCode = Artisan::call('migrate:refresh', [
+        '--force' => true,
+    ]);
+    return preg_split('/\n|\r\n?/',Artisan::output());
+});
