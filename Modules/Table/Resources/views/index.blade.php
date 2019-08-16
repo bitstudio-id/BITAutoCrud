@@ -1,7 +1,7 @@
 @extends('bit.template')
 
 @section('content')
-    <div class="card">
+    <div id="button" class="card">
         <div class="card-header">
             <i class="fa fa-edit"></i> DataTables
             <div class="card-header-actions">
