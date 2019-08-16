@@ -6,7 +6,7 @@
                     <i class="nav-icon icon-home"></i> Home
                 </a>
             </li>
-            <li class="nav-title">BITS COMPONENTS</li>
+            <li class="nav-title">Bit COMPONENTS</li>
             <li class="nav-item">
                 <a class="nav-link" href="/">
                     <i class="nav-icon fa fa-table"></i> Table</a>

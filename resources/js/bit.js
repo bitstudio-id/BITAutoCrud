@@ -1,5 +1,5 @@
 'use strict';
-var BITS = function() {
+var Bit = function() {
     let Render = () => {
         let Button = (p) => {
             $('#'+p.target).append($("<button />", {
