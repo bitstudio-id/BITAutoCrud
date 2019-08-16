@@ -24,9 +24,9 @@ class CreateUsersTable extends Migration
             $table->timestamp('user_created_at')->nullable();
             $table->timestamp('user_updated_at')->nullable();
             $table->timestamp('user_deleted_at')->nullable();
-            $table->timestamp('user_created_by')->nullable();
-            $table->timestamp('user_updated_by')->nullable();
-            $table->timestamp('user_deleted_by')->nullable();
+            $table->unsignedBigInteger('user_created_by')->nullable();
+            $table->unsignedBigInteger('user_updated_by')->nullable();
+            $table->unsignedBigInteger('user_deleted_by')->nullable();
         });
     }
 
