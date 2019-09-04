@@ -1,16 +1,7 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 Route::prefix('crud')->group(function() {
-    Route::get('/', 'CrudController@index');
+    Route::get('/{table}', 'CrudController@get')->name('crud.get');
+    Route::post('/post', 'CrudController@post')->name('crud.post');
+    Route::delete('/delete/{param}', 'CrudController@delete')->name('crud.delete');
 });
