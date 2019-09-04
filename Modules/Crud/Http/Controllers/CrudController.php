@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Table\Http\Controllers;
+namespace Modules\Crud\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 
-class TableController extends Controller
+class CrudController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class TableController extends Controller
      */
     public function index()
     {
-        return view('table::index');
+        return view('crud::index');
     }
 
     /**
@@ -23,7 +23,7 @@ class TableController extends Controller
      */
     public function create()
     {
-        return view('table::create');
+        return view('crud::create');
     }
 
     /**
@@ -43,7 +43,7 @@ class TableController extends Controller
      */
     public function show($id)
     {
-        return view('table::show');
+        return view('crud::show');
     }
 
     /**
@@ -53,7 +53,7 @@ class TableController extends Controller
      */
     public function edit($id)
     {
-        return view('table::edit');
+        return view('crud::edit');
     }
 
     /**

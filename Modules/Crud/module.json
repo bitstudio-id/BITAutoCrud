@@ -1,12 +1,12 @@
 {
-    "name": "Table",
-    "alias": "table",
+    "name": "Crud",
+    "alias": "crud",
     "description": "",
     "keywords": [],
     "active": 1,
     "order": 0,
     "providers": [
-        "Modules\\Table\\Providers\\TableServiceProvider"
+        "Modules\\Crud\\Providers\\CrudServiceProvider"
     ],
     "aliases": {},
     "files": [],

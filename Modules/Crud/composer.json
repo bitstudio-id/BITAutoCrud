@@ -1,5 +1,5 @@
 {
-    "name": "nwidart/table",
+    "name": "nwidart/crud",
     "description": "",
     "authors": [
         {
@@ -10,7 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Modules\\Table\\Providers\\TableServiceProvider"
+                "Modules\\Crud\\Providers\\CrudServiceProvider"
             ],
             "aliases": {
                 
@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Modules\\Table\\": ""
+            "Modules\\Crud\\": ""
         }
     }
 }

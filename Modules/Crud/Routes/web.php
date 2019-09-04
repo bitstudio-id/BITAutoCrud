@@ -11,6 +11,6 @@
 |
 */
 
-Route::prefix('/bit/table')->group(function() {
-    Route::get('/', 'TableController@index');
+Route::prefix('crud')->group(function() {
+    Route::get('/', 'CrudController@index');
 });

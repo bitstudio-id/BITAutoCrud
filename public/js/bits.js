@@ -1,1 +1,1 @@
-"use strict";var BITS=function(){let t=()=>{return{CallButton:t=>(t=>{$("#"+t.target).append($("<button />",{id:t.id,class:t.class,type:t.type,text:t.label}))})(t)}};return{rButton:e=>{t().CallButton(e)}}}();
+"use strict";const Bits=function(){let t=()=>{return{CallButton:t=>(t=>{console.log("its working"),$("#"+t.target).append($("<button />",{id:t.id,class:t.class,type:t.type,text:t.text}))})(t)}};return{rButton:n=>{t().CallButton(n)}}}();

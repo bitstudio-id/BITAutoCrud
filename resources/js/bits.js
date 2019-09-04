@@ -1,12 +1,14 @@
 'use strict';
-var Bit = function() {
+
+const Bits = function () {
     let Render = () => {
         let Button = (p) => {
-            $('#'+p.target).append($("<button />", {
-                id : p.id,
-                class : p.class,
-                type : p.type,
-                text : p.label
+            console.log('its working');
+            $('#' + p.target).append($("<button />", {
+                id: p.id,
+                class: p.class,
+                type: p.type,
+                text: p.text
             }));
         };
         return {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Table\Providers;
+namespace Modules\Crud\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 
-class TableServiceProvider extends ServiceProvider
+class CrudServiceProvider extends ServiceProvider
 {
     /**
      * Boot the application events.
@@ -39,10 +39,10 @@ class TableServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__.'/../Config/config.php' => config_path('table.php'),
+            __DIR__.'/../Config/config.php' => config_path('crud.php'),
         ], 'config');
         $this->mergeConfigFrom(
-            __DIR__.'/../Config/config.php', 'table'
+            __DIR__.'/../Config/config.php', 'crud'
         );
     }
 
@@ -53,7 +53,7 @@ class TableServiceProvider extends ServiceProvider
      */
     public function registerViews()
     {
-        $viewPath = resource_path('views/modules/table');
+        $viewPath = resource_path('views/modules/crud');
 
         $sourcePath = __DIR__.'/../Resources/views';
 
@@ -62,8 +62,8 @@ class TableServiceProvider extends ServiceProvider
         ],'views');
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . '/modules/table';
-        }, \Config::get('view.paths')), [$sourcePath]), 'table');
+            return $path . '/modules/crud';
+        }, \Config::get('view.paths')), [$sourcePath]), 'crud');
     }
 
     /**
@@ -73,12 +73,12 @@ class TableServiceProvider extends ServiceProvider
      */
     public function registerTranslations()
     {
-        $langPath = resource_path('lang/modules/table');
+        $langPath = resource_path('lang/modules/crud');
 
         if (is_dir($langPath)) {
-            $this->loadTranslationsFrom($langPath, 'table');
+            $this->loadTranslationsFrom($langPath, 'crud');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'table');
+            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'crud');
         }
     }
 
