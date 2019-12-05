@@ -637,6 +637,10 @@
 @endsection
 @section('after_js')
     <script>
+        $(window).bind('hashchange', function () {
+            let hash = window.location.hash;
+            Bits.Route(hash);
+        });
         $(function () {
             $('.table').dataTable();
             // let param = {
