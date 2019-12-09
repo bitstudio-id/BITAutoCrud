@@ -48,7 +48,6 @@ const Bits = function () {
         $ui.fadeOut().promise()
             .done(function () {
                 $ui.children().remove();
-                console.log('kontol');
                 $ui.append(rEl('div', {class: "card"})
                     .append(rEl('div', {class: "card-header"})
                         .append(rEl('i', {class: "fa fa-edit"}), "Test"))
@@ -56,6 +55,7 @@ const Bits = function () {
                         .append(rEl('div', {class: "table"}))))
             }).then(function () {
             $ui.fadeIn();
+            $('.table').DataTable();
         });
     };
     let Render = () => {
@@ -69,9 +69,13 @@ const Bits = function () {
                 text: p.text
             }));
         };
+        let DataTable = (p) => {
+          console.log('trigger datatable')
+        };
         return {
             CallButton: (p) => Button(p),
-            CallElement: (elem, option) => Element(elem, option)
+            CallElement: (elem, option) => Element(elem, option),
+            CallDataTable: (p) => DataTable(p)
         }
     };
     return {
