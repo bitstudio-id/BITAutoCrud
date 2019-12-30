@@ -1,4 +1,20 @@
 const mix = require('laravel-mix');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+mix.webpackConfig({
+    plugins: [
+        new BrowserSyncPlugin({
+            files: [
+                'resources/views/**/*',
+                'resources/views/**/**/**/*',
+                'resources/**/*.js',
+                'Modules/**/Resources/views/**/*.php',
+                'Modules/**/**/*.php',
+                'Modules/**/**/**/*.php',
+                'routes/*.php',
+            ]
+        }, {reload: false})
+    ]
+});
 
 /*
  |--------------------------------------------------------------------------

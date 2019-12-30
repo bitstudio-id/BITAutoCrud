@@ -1,7 +1,6 @@
 'use strict';
 
 const Bits = function () {
-    let kontol = this;
     let Data = (p) => {
         let result;
         switch (p) {
@@ -50,12 +49,19 @@ const Bits = function () {
                 $ui.children().remove();
                 $ui.append(rEl('div', {class: "card"})
                     .append(rEl('div', {class: "card-header"})
-                        .append(rEl('i', {class: "fa fa-edit"}), "Test"))
+                        .append(rEl('i', {class: "fa fa-edit"}), "Test")
+                        .append(rEl('div', {class: "card-header-actions"})
+                            .append(rEl('button', {class: "btn btn-primary btn-sm",text: "Add Data",action: Render().CallForm(window.location.hash)})
+                        )
+                    ))
                     .append(rEl('div', {class: "card-body"})
                         .append(rEl('div', {class: "table"}))))
             }).then(function () {
             $ui.fadeIn();
-            $('.table').DataTable();
+            /*init datatable*/
+            $('.table').DataTable({
+
+            });
         });
     };
     let Render = () => {
@@ -72,10 +78,14 @@ const Bits = function () {
         let DataTable = (p) => {
           console.log('trigger datatable')
         };
+        let Form = (p) => {
+            console.log(p);
+        };
         return {
             CallButton: (p) => Button(p),
             CallElement: (elem, option) => Element(elem, option),
-            CallDataTable: (p) => DataTable(p)
+            CallDataTable: (p) => DataTable(p),
+            CallForm: (p) => Form(p)
         }
     };
     return {
