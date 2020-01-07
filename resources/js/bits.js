@@ -1,6 +1,7 @@
 'use strict';
 
 const Bits = function () {
+    let app = 'http://autocrud.test/';
     let Data = (p) => {
         let result;
         switch (p) {
@@ -55,12 +56,51 @@ const Bits = function () {
                         )
                     ))
                     .append(rEl('div', {class: "card-body"})
-                        .append(rEl('div', {class: "table"}))))
+                        .append(rEl('table', {id: `${p.substring(1)}-table`}))))
             }).then(function () {
             $ui.fadeIn();
             /*init datatable*/
-            $('.table').DataTable({
-
+            $.get(`${app}crud/${window.location.hash.substring(1)}`)
+                .done(function (data) {
+                const c = data.column;
+                const cd = [
+                    {
+                        targets: 0,
+                        title: 'No.',
+                        orderable: true,
+                        render: function (data, type, full, meta) {
+                            return meta.row + 1;
+                        },
+                    },
+                    {
+                        targets: -1,
+                        title: 'Actions',
+                        orderable: true,
+                        render: function (data, type, full, meta) {
+                            return `<button id="edit" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>
+                        <button id="delete" class="btn btn-danger" title="Delete"><i class="fa fa-trash"></i></button>`;
+                        },
+                    }
+                ];
+                    $(p+'-table').DataTable({
+                        dom: "Bfrtip",
+                        responsive: true,
+                        language: {
+                            "emptyTable": "My Custom Message On Empty Table"
+                        },
+                        fixedHeader: true,
+                        keys: true,
+                        dataType: "json",
+                        data: data.data,
+                        stateSave: true,
+                        pagingType: "full_numbers",
+                        pageLength: 8,
+                        lengthMenu: [[5, 8, 15, 20], [5, 8, 15, 20]],
+                        autoWidth: true,
+                        orderable: true,
+                        columns: c,
+                        columnDefs: cd
+                    });
             });
         });
     };

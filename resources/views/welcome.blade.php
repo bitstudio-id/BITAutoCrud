@@ -642,7 +642,6 @@
             Bits.Route(hash);
         });
         $(function () {
-            $('.table').dataTable();
             // let param = {
             //     target: 'button',
             //     id: 'hmm',

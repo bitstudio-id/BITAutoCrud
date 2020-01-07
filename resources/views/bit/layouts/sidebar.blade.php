@@ -8,15 +8,15 @@
             </li>
             <li class="nav-title">Bits COMPONENTS</li>
             <li class="nav-item">
-                <a class="nav-link" href="#database">
+                <a class="nav-link" href="#bittable">
                     <i class="nav-icon fa fa-table"></i> Database</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#link-form">
+                <a class="nav-link" href="#bitmenu">
                     <i class="nav-icon fa fa-wpforms"></i> Form</a>
             </li>
             <li class="nav-item nav-dropdown">
-                <a class="nav-link" href="#link-menu">
+                <a class="nav-link" href="#bitform">
                     <i class="nav-icon icon-list"></i> Menu</a>
             </li>
             <li class="nav-item nav-dropdown">
