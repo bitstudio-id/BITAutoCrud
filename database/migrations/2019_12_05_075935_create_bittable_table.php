@@ -18,8 +18,9 @@ class CreateBittableTable extends Migration
             $table->unsignedBigInteger('bittable_parent_id')->nullable();
             $table->string('bittable_name');
             $table->string('bittable_type')->nullable();
-            $table->text('bittable_length');
-            $table->text('bittable_default');
+            $table->text('bittable_length')->nullable();
+            $table->text('bittable_default')->nullable();
+            $table->boolean('bittable_nullable')->nullable();
             $table->enum('bittable_join',['left','right','inner'])->nullable();
             $table->unsignedBigInteger('bittable_join_to_id')->nullable();
             $table->timestamps();

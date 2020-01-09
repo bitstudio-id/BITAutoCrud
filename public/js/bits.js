@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const Bits = function () {
     let app = 'http://autocrud.test/';
@@ -42,6 +42,10 @@ const Bits = function () {
         }
         return result;
     };
+    let tClasses = (p) => {
+        console.log(p);
+        $(p).toggleClass('show')
+    };
     let Route = (p) => {
         let rEl = (elem, option) => Render().CallElement(elem, option);
         let $ui = $('#ui-view');
@@ -50,24 +54,72 @@ const Bits = function () {
                 $ui.children().remove();
                 $ui.append(rEl('div', {class: "card"})
                     .append(rEl('div', {class: "card-header"})
-                        .append(rEl('i', {class: "fa fa-edit"}), "Test")
+                        .append(rEl('i', {class: "fa fa-edit"}), 'Form')
                         .append(rEl('div', {class: "card-header-actions"})
-                            .append(rEl('button', {class: "btn btn-primary btn-sm",text: "Add Data",action: Render().CallForm(window.location.hash)})
+                            .append(rEl('a', {
+                                class: "card-header-action btn-minimize collapsed",
+                                "onclick":`Bits.tClasses('#cForm')`,
+                                html: `<i class="icon-arrow-up"></i>`
+                            })
+                            )
+                        ))
+                    .append(rEl('div', {id: "cForm", class: "card-body collapse"})
+                        .append(rEl('form', {
+                        })
+                            .append(rEl('div',{id:'parent',class:'row'}))
+                            .append(rEl('div',{id:'child',class:'row'}))
+                            .append(rEl('button',{
+                                id:'addfield',
+                                text:'Add Field',
+                                class: 'btn btn-primary'
+                            }))
                         )
-                    ))
+                    ));
+                $ui.append(rEl('div', {class: "card"})
+                    .append(rEl('div', {class: "card-header"})
+                        .append(rEl('i', {class: "fa fa-table"}), 'Data Table')
+                        .append(rEl('div', {class: "card-header-actions"})))
                     .append(rEl('div', {class: "card-body"})
-                        .append(rEl('table', {id: `${p.substring(1)}-table`}))))
+                        .append(rEl('table', {id: `${p.substring(1)}-table`,class: 'table table-striped table-bordered datatable'}))))
             }).then(function () {
             $ui.fadeIn();
             /*init datatable*/
-            $.get(`${app}crud/${window.location.hash.substring(1)}`)
+            $.get(`${app}bit/${window.location.hash.substring(1)}`)
                 .done(function (data) {
-                const c = data.column;
+                let f = data.form;
+                    $.each(f.parent,function (k,v) {
+                        $('#parent').append(rEl('div',{
+                            class: `form-group ${k !== 0 ? 'col-sm-4' : ''}`
+                        }).append(rEl(v.input,{
+                            id: v.id,
+                            type: v.type,
+                            placeholder: v.label,
+                            class: 'form-control',
+                            url: v.url
+                        })))
+                    });
+                    $.each(f.child,function (k,v) {
+                        $('#child')
+                            .append(rEl('div',{
+                                class: `form-group ${k !== 0 ? 'col-sm-6' : ''}`
+                            })
+                                .append(rEl(v.input,{
+                            id: v.id,
+                            type: v.type,
+                            placeholder: v.label,
+                            class: 'form-control',
+                            url: v.url
+                        })))
+                    });
+                let c = data.column;
+                    c[0] = {"title": "No", data: null, name: null};
+                    c[data.column.length] = {"title": "Action", data: null, name: null};
                 const cd = [
                     {
                         targets: 0,
                         title: 'No.',
-                        orderable: true,
+                        orderable: false,
+                        visible: true,
                         render: function (data, type, full, meta) {
                             return meta.row + 1;
                         },
@@ -75,7 +127,8 @@ const Bits = function () {
                     {
                         targets: -1,
                         title: 'Actions',
-                        orderable: true,
+                        orderable: false,
+                        visible: true,
                         render: function (data, type, full, meta) {
                             return `<button id="edit" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>
                         <button id="delete" class="btn btn-danger" title="Delete"><i class="fa fa-trash"></i></button>`;
@@ -86,7 +139,7 @@ const Bits = function () {
                         dom: "Bfrtip",
                         responsive: true,
                         language: {
-                            "emptyTable": "My Custom Message On Empty Table"
+                            "emptyTable": "Data is Empty"
                         },
                         fixedHeader: true,
                         keys: true,
@@ -98,16 +151,32 @@ const Bits = function () {
                         lengthMenu: [[5, 8, 15, 20], [5, 8, 15, 20]],
                         autoWidth: true,
                         orderable: true,
-                        columns: c,
-                        columnDefs: cd
+                        columnDefs: cd,
+                        columns: c
                     });
-            });
+            })
+                .then(function () {
+                    Render().CallSelect()
+                });
         });
     };
     let Render = () => {
         let Element = (elem, option) => $("<" + elem + " />", option);
+        let Select = () => {
+            $('select').each(function(){
+                let $t = $(this);
+                $.get($t.attr('url')).done((data) => {
+                    data[0] = {
+                        'id': '',"text":$t.attr('placeholder')
+                    };
+                    $t.select2({
+                        data: data
+                    });
+                });
+            });
+
+        };
         let Button = (p) => {
-            console.log('its working');
             $('#' + p.target).append($("<button />", {
                 id: p.id,
                 class: p.class,
@@ -125,7 +194,8 @@ const Bits = function () {
             CallButton: (p) => Button(p),
             CallElement: (elem, option) => Element(elem, option),
             CallDataTable: (p) => DataTable(p),
-            CallForm: (p) => Form(p)
+            CallForm: (p) => Form(p),
+            CallSelect: () => Select()
         }
     };
     return {
@@ -137,6 +207,9 @@ const Bits = function () {
         },
         Route: (p) => {
             Route(p);
+        },
+        tClasses: (p) => {
+            tClasses(p);
         },
     }
 }();
