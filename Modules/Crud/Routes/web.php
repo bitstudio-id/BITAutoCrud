@@ -6,6 +6,7 @@ Route::prefix('crud')->group(function() {
     Route::delete('/delete/{param}', 'CrudController@delete')->name('crud.delete');
 });
 Route::prefix('bit')->group(function() {
-    Route::get('/{table}', 'CrudController@bitGet')->name('bit.Get');
+    Route::get('/get/{table}', 'CrudController@bitGet')->name('bit.Get');
+    Route::post('/save', 'CrudController@bitSave')->name('bit.Save');
     Route::get('/select/{param}', 'CrudController@select')->name('bit.select');
 });

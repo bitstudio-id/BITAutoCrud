@@ -1,6 +1,18 @@
-"use strict";
+'use strict';
 
+function save(){
+    var resForm=$('form').serializeArray();
+        $.ajax({
+            type: 'POST',
+            url: `${Bits.app}bit/save`,
+            data: resForm
+        })
+            .done((data)=>{
+                console.log(data);
+            });
+    }
 const Bits = function () {
+    let childForm;
     let app = 'http://autocrud.test/';
     let Data = (p) => {
         let result;
@@ -68,13 +80,20 @@ const Bits = function () {
                         })
                             .append(rEl('div',{id:'parent',class:'row'}))
                             .append(rEl('div',{id:'child',class:'row'}))
-                            .append(rEl('button',{
-                                id:'addfield',
-                                text:'Add Field',
-                                class: 'btn btn-primary'
-                            }))
-                        )
-                    ));
+                        ).append(rEl('a',{
+                            id:'addfield',
+                            text:'Add Field',
+                            class: 'btn btn-primary',
+                            onclick: "cloneTag(0)"
+                        }))
+                        .append(rEl('a',{
+                            id:'save',
+                            text:'Save',
+                            class: 'btn btn-primary',
+                            onclick: "save()"
+                        }))
+                    )
+                );
                 $ui.append(rEl('div', {class: "card"})
                     .append(rEl('div', {class: "card-header"})
                         .append(rEl('i', {class: "fa fa-table"}), 'Data Table')
@@ -84,14 +103,16 @@ const Bits = function () {
             }).then(function () {
             $ui.fadeIn();
             /*init datatable*/
-            $.get(`${app}bit/${window.location.hash.substring(1)}`)
+            $.get(`${app}bit/get/${window.location.hash.substring(1)}`)
                 .done(function (data) {
                 let f = data.form;
+                    Bits.childForm = f.child;
                     $.each(f.parent,function (k,v) {
                         $('#parent').append(rEl('div',{
                             class: `form-group ${k !== 0 ? 'col-sm-4' : ''}`
                         }).append(rEl(v.input,{
                             id: v.id,
+                            name: v.id,
                             type: v.type,
                             placeholder: v.label,
                             class: 'form-control',
@@ -105,6 +126,7 @@ const Bits = function () {
                             })
                                 .append(rEl(v.input,{
                             id: v.id,
+                            name: v.id,
                             type: v.type,
                             placeholder: v.label,
                             class: 'form-control',
@@ -166,13 +188,14 @@ const Bits = function () {
             $('select').each(function(){
                 let $t = $(this);
                 $.get($t.attr('url')).done((data) => {
+                    console.log(data);
                     data[0] = {
-                        'id': '',"text":$t.attr('placeholder')
+                        'id': '',"text":$t.attr('placeholder'),"title":$t.attr('placeholder')
                     };
-                    $t.select2({
-                        data: data
-                    });
-                });
+
+                }).then((data)=>$t.select2({
+                    data: data
+                }));
             });
 
         };
@@ -205,14 +228,51 @@ const Bits = function () {
         rElement: (elem, option) => {
             Render().CallElement(elem, option);
         },
+        rSelect2: () =>
+            Render().CallSelect()
+        ,
         Route: (p) => {
             Route(p);
         },
         tClasses: (p) => {
             tClasses(p);
         },
+        app,
+        childForm
     }
 }();
 
+function cloneTag(index){
+    index = index >= 0 ? index+1 :null;
+    $('#addfield').attr('onclick',`cloneTag(${index})`);
+    $('form').append($('<div />', {
+        class: `form-${index} row`
+    }));
+    $.each(Bits.childForm, function (k,v) {
+        Bits.childForm[k].id = (v.id).replace(/\d/g, index);
+        $(`.form-${index}`)
+            .append($('<div />', {
+                class: `form-group ${k !== 0 ? 'col-sm-6' : ''}`
+            }).append($(`<${v.input} />`, {
+                    id: v.id,
+                    name: v.id,
+                    type: v.type,
+                    placeholder: v.label,
+                    class: 'form-control',
+                    url: v.url
+                }))
+            )
+    });
+    Bits.rSelect2();
+    $(`.form-${index}`)
+        .append($('<div />', {class:"form-group col-sm-6"})
+            .append($('<a />', {
+                onclick: `removeParent(${index})`,
+                class: 'btn btn-danger btn-block',
+                text: 'remove',
+            })));
+}
 
-
+function removeParent(p){
+    $(`.form-${p}`).remove();
+}
