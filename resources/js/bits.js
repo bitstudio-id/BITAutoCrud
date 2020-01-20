@@ -152,7 +152,7 @@ const Bits = function () {
                         orderable: false,
                         visible: true,
                         render: function (data, type, full, meta) {
-                            return `<button id="edit" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>
+                            return `<button id="${data.id}" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>
                         <button id="delete" class="btn btn-danger" title="Delete"><i class="fa fa-trash"></i></button>`;
                         },
                     }
