@@ -2,6 +2,7 @@
 
 function save(){
     var resForm=$('form').serializeArray();
+
         $.ajax({
             type: 'POST',
             url: `${Bits.app}bit/save`,
@@ -14,48 +15,7 @@ function save(){
 const Bits = function () {
     let childForm;
     let app = 'http://autocrud.test/';
-    let Data = (p) => {
-        let result;
-        switch (p) {
-            case '#database':
-                result = {
-                    table: [
-                        {
-                            id: "bittable_id",
-                            type: "hidden"
-                        }, {
-                            id: "bittable_name",
-                            type: "text"
-                        }, {
-                            id: "bittable_type",
-                            type: "text",
-                            value: "table"
-                        }
-                    ],
-                    field: [
-                        {
-                            id: "bittable_parent_id",
-                            type: "hidden",
-                        }, {
-                            id: "bittable_name",
-                            type: "hidden",
-                        }, {
-                            id: "bittable_type",
-                            type: "select",
-                        },
-                    ]
-                };
-                break;
-            case 'menu':
-                // code block
-                break;
-            default:
-                alert('error with your code')
-        }
-        return result;
-    };
     let tClasses = (p) => {
-        console.log(p);
         $(p).toggleClass('show')
     };
     let Route = (p) => {
@@ -65,7 +25,7 @@ const Bits = function () {
             .done(function () {
                 $ui.children().remove();
                 $ui.append(rEl('div', {class: "card"})
-                    .append(rEl('div', {class: "card-header"})
+                    .append(rEl('div', {class: "card-header bg-primary text-white"})
                         .append(rEl('i', {class: "fa fa-edit"}), 'Form')
                         .append(rEl('div', {class: "card-header-actions"})
                             .append(rEl('a', {
@@ -80,22 +40,24 @@ const Bits = function () {
                         })
                             .append(rEl('div',{id:'parent',class:'row'}))
                             .append(rEl('div',{id:'child',class:'row'}))
-                        ).append(rEl('a',{
+                        ).append(rEl('div', {class: "card-footer"})
+                            .append(rEl('button',{
                             id:'addfield',
                             text:'Add Field',
-                            class: 'btn btn-primary',
+                            class: 'btn btn-info pull-left',
                             onclick: "cloneTag(0)"
                         }))
-                        .append(rEl('a',{
-                            id:'save',
-                            text:'Save',
-                            class: 'btn btn-primary',
-                            onclick: "save()"
-                        }))
+                            .append(rEl('button',{
+                                id:'save',
+                                text:'Save',
+                                class: 'btn btn-primary pull-right',
+                                onclick: "save()"
+                            }))
                     )
-                );
+
+                ));
                 $ui.append(rEl('div', {class: "card"})
-                    .append(rEl('div', {class: "card-header"})
+                    .append(rEl('div', {class: "card-header bg-primary text-white"})
                         .append(rEl('i', {class: "fa fa-table"}), 'Data Table')
                         .append(rEl('div', {class: "card-header-actions"})))
                     .append(rEl('div', {class: "card-body"})
@@ -152,7 +114,7 @@ const Bits = function () {
                         orderable: false,
                         visible: true,
                         render: function (data, type, full, meta) {
-                            return `<button id="${data.id}" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>
+                            return `<button id="${Object.values(data)[0]}" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>
                         <button id="delete" class="btn btn-danger" title="Delete"><i class="fa fa-trash"></i></button>`;
                         },
                     }
@@ -188,7 +150,6 @@ const Bits = function () {
             $('select').each(function(){
                 let $t = $(this);
                 $.get($t.attr('url')).done((data) => {
-                    console.log(data);
                     data[0] = {
                         'id': '',"text":$t.attr('placeholder'),"title":$t.attr('placeholder')
                     };

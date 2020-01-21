@@ -642,14 +642,6 @@
             Bits.Route(hash);
         });
         $(function () {
-            // let param = {
-            //     target: 'button',
-            //     id: 'hmm',
-            //     class: 'btn btn-primary',
-            //     type: 'submit',
-            //     text: 'append bunton'
-            // };
-            // Bits.rButton(param)
         })
     </script>
 @endsection
