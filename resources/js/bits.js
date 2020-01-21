@@ -67,6 +67,11 @@ const Bits = function () {
             /*init datatable*/
             $.get(`${app}bit/get/${window.location.hash.substring(1)}`)
                 .done(function (data) {
+                    let param = {
+                        id: p,
+                        c:data.column,
+                        url:`${app}bit/datatable/${window.location.hash.substring(1)}`,
+                    };
                 let f = data.form;
                     Bits.childForm = f.child;
                     $.each(f.parent,function (k,v) {
@@ -95,49 +100,8 @@ const Bits = function () {
                             url: v.url
                         })))
                     });
-                let c = data.column;
-                    c[0] = {"title": "No", data: null, name: null};
-                    c[data.column.length] = {"title": "Action", data: null, name: null};
-                const cd = [
-                    {
-                        targets: 0,
-                        title: 'No.',
-                        orderable: false,
-                        visible: true,
-                        render: function (data, type, full, meta) {
-                            return meta.row + 1;
-                        },
-                    },
-                    {
-                        targets: -1,
-                        title: 'Actions',
-                        orderable: false,
-                        visible: true,
-                        render: function (data, type, full, meta) {
-                            return `<button id="${Object.values(data)[0]}" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>
-                        <button id="delete" class="btn btn-danger" title="Delete"><i class="fa fa-trash"></i></button>`;
-                        },
-                    }
-                ];
-                    $(p+'-table').DataTable({
-                        dom: "Bfrtip",
-                        responsive: true,
-                        language: {
-                            "emptyTable": "Data is Empty"
-                        },
-                        fixedHeader: true,
-                        keys: true,
-                        dataType: "json",
-                        data: data.data,
-                        stateSave: true,
-                        pagingType: "full_numbers",
-                        pageLength: 8,
-                        lengthMenu: [[5, 8, 15, 20], [5, 8, 15, 20]],
-                        autoWidth: true,
-                        orderable: true,
-                        columnDefs: cd,
-                        columns: c
-                    });
+
+                    Render().CallDataTable(param)
             })
                 .then(function () {
                     Render().CallSelect()
@@ -169,7 +133,49 @@ const Bits = function () {
             }));
         };
         let DataTable = (p) => {
-          console.log('trigger datatable')
+            const cd = [
+                {
+                    targets: 0,
+                    title: 'No.',
+                    orderable: false,
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        return meta.row + 1;
+                    },
+                },
+                {
+                    targets: -1,
+                    title: 'Actions',
+                    orderable: false,
+                    visible: true,
+                    render: function (data, type, full, meta) {
+                        return `<button id="${Object.values(data)[0]}" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>
+                        <button id="delete" class="btn btn-danger" title="Delete"><i class="fa fa-trash"></i></button>`;
+                    },
+                }
+            ];
+            $(p.id+'-table').DataTable({
+                dom: "Bfrtip",
+                responsive: true,
+                language: {
+                    "emptyTable": "Data is Empty"
+                },
+                fixedHeader: true,
+                keys: true,
+                ajax: {
+                    url: p.url,
+                    dataSrc: 'data'
+                },
+                dataType: "json",
+                stateSave: true,
+                pagingType: "full_numbers",
+                pageLength: 8,
+                lengthMenu: [[5, 8, 15, 20], [5, 8, 15, 20]],
+                autoWidth: true,
+                orderable: true,
+                columnDefs: cd,
+                columns: p.c
+            });
         };
         let Form = (p) => {
             console.log(p);
