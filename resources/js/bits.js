@@ -1,11 +1,11 @@
 'use strict';
 
-function save(){
+function save(p){
     var resForm=$('form').serializeArray();
 
         $.ajax({
             type: 'POST',
-            url: `${Bits.app}bit/save`,
+            url: p,
             data: resForm
         })
             .done((data)=>{
@@ -24,38 +24,40 @@ const Bits = function () {
         $ui.fadeOut().promise()
             .done(function () {
                 $ui.children().remove();
-                $ui.append(rEl('div', {class: "card"})
-                    .append(rEl('div', {class: "card-header bg-primary text-white"})
-                        .append(rEl('i', {class: "fa fa-edit"}), 'Form')
-                        .append(rEl('div', {class: "card-header-actions"})
-                            .append(rEl('a', {
-                                class: "card-header-action btn-minimize collapsed",
-                                "onclick":`Bits.tClasses('#cForm')`,
-                                html: `<i class="icon-arrow-up"></i>`
-                            })
+                if (p!=='#bitmenu') {
+                    $ui.append(rEl('div', {class: "card"})
+                        .append(rEl('div', {class: "card-header bg-primary text-white"})
+                            .append(rEl('i', {class: "fa fa-edit"}), 'Form')
+                            .append(rEl('div', {class: "card-header-actions"})
+                                .append(rEl('a', {
+                                        class: "card-header-action btn-minimize collapsed",
+                                        "onclick":`Bits.tClasses('#cForm')`,
+                                        html: `<i class="icon-arrow-up"></i>`
+                                    })
+                                )
+                            ))
+                        .append(rEl('div', {id: "cForm", class: "card-body collapse"})
+                            .append(rEl('form', {
+                                })
+                                    .append(rEl('div',{id:'parent',class:'row'}))
+                                    .append(rEl('div',{id:'child',class:'row'}))
+                            ).append(rEl('div', {class: "card-footer"})
+                                .append(rEl('button',{
+                                    id:'addfield',
+                                    text:'Add Field',
+                                    class: 'btn btn-info pull-left',
+                                    onclick: "cloneTag(0)"
+                                }))
+                                .append(rEl('button',{
+                                    id:'save',
+                                    text:'Save',
+                                    class: 'btn btn-primary pull-right',
+                                    onclick: `save('${Bits.app}bit/save')`
+                                }))
                             )
-                        ))
-                    .append(rEl('div', {id: "cForm", class: "card-body collapse"})
-                        .append(rEl('form', {
-                        })
-                            .append(rEl('div',{id:'parent',class:'row'}))
-                            .append(rEl('div',{id:'child',class:'row'}))
-                        ).append(rEl('div', {class: "card-footer"})
-                            .append(rEl('button',{
-                            id:'addfield',
-                            text:'Add Field',
-                            class: 'btn btn-info pull-left',
-                            onclick: "cloneTag(0)"
-                        }))
-                            .append(rEl('button',{
-                                id:'save',
-                                text:'Save',
-                                class: 'btn btn-primary pull-right',
-                                onclick: "save()"
-                            }))
-                    )
 
-                ));
+                        ));
+                }
                 $ui.append(rEl('div', {class: "card"})
                     .append(rEl('div', {class: "card-header bg-primary text-white"})
                         .append(rEl('i', {class: "fa fa-table"}), 'Data Table')
@@ -74,34 +76,120 @@ const Bits = function () {
                     };
                 let f = data.form;
                     Bits.childForm = f.child;
-                    $.each(f.parent,function (k,v) {
-                        $('#parent').append(rEl('div',{
-                            class: `form-group ${k !== 0 ? 'col-sm-4' : ''}`
-                        }).append(rEl(v.input,{
-                            id: v.id,
-                            name: v.id,
-                            type: v.type,
-                            placeholder: v.label,
-                            class: 'form-control',
-                            url: v.url
-                        })))
-                    });
-                    $.each(f.child,function (k,v) {
-                        $('#child')
-                            .append(rEl('div',{
-                                class: `form-group ${k !== 0 ? 'col-sm-6' : ''}`
-                            })
-                                .append(rEl(v.input,{
-                            id: v.id,
-                            name: v.id,
-                            type: v.type,
-                            placeholder: v.label,
-                            class: 'form-control',
-                            url: v.url
-                        })))
-                    });
+                    if (p==='#bitform'){
+                        $.each(f,function (k,v) {
+                            $('#parent').append(rEl('div',{
+                                class: `form-group ${k !== 0 ? 'col-sm-4' : ''}`
+                            }).append(rEl(v.input,{
+                                id: v.id,
+                                name: v.id,
+                                type: v.type,
+                                placeholder: v.label,
+                                class: 'form-control',
+                                url: v.url
+                            })))
+                        });
+                    }else {
+                        $.each(f.parent,function (k,v) {
+                            $('#parent').append(rEl('div',{
+                                class: `form-group ${k !== 0 ? 'col-sm-4' : ''}`
+                            }).append(rEl(v.input,{
+                                id: v.id,
+                                name: v.id,
+                                type: v.type,
+                                placeholder: v.label,
+                                class: 'form-control',
+                                url: v.url
+                            })))
+                        });
+                        $.each(f.child,function (k,v) {
+                            $('#child')
+                                .append(rEl('div',{
+                                    class: `form-group ${k !== 0 ? 'col-sm-6' : ''}`
+                                })
+                                    .append(rEl(v.input,{
+                                        id: v.id,
+                                        name: v.id,
+                                        type: v.type,
+                                        placeholder: v.label,
+                                        class: 'form-control',
+                                        url: v.url
+                                    })))
+                        });
+                    }
 
-                    Render().CallDataTable(param)
+                    if (p!=='#bitmenu') {
+                        Render().CallDataTable(param)
+                    }
+                    if (p==='#bitmenu'){
+                        $.get('/bit/bitMenuGet')
+                    .done((data)=>{
+                        $('.card-body').append(rEl('form', {class: "row"})
+
+                        ).append(rEl('button', {class: "btn btn-primary",text:"Submit", onclick:`save('${Bits.app}bit/menusave')`}));
+                            if (data!='') {
+                                $.each(data,(k,v)=>{
+                                    $('form')
+                                        .append(rEl('div', {
+                                            class: "form-group col-3"
+                                        }).append(rEl('label', {
+                                            text:'Menu Parent',
+                                        }))
+                                            .append(rEl('select', {
+                                            id: `s${v.bitmenu_id}`,
+                                            class: "form-control zz",
+                                            name: `field[${v.bitmenu_id}][bitmenu_parent_id]`,
+                                        }).append(rEl('option', {
+                                                value: '',
+                                                text: 'Choose Parent'
+                                        }
+                                            ))))
+                                        .append(rEl('div', {
+                                            class: "form-group col-3"
+                                        }).append(rEl('label', {
+                                            text:'Menu Name',
+                                        }))
+                                            .append(rEl('input', {
+                                            class: "form-control",
+                                            value:v.bittable_name,
+                                            disabled: true
+                                        })))
+                                        .append(rEl('div', {
+                                            class: "form-group col-3"
+                                        }).append(rEl('label', {
+                                            text:'Index',
+                                        }))
+                                            .append(rEl('input', {
+                                        class: "form-control",
+                                        placeholder:v.bitmenu_index,
+                                        type:'number',
+                                        name: `field[${v.bitmenu_id}][bitmenu_index]`,
+                                    })))
+                                        .append(rEl('div', {
+                                            class: "form-group col-3"
+                                        }).append(rEl('label', {
+                                            text:'Icon',
+                                        }))
+                                        .append(rEl('input', {
+                                        class: "form-control",
+                                        name: `field[${v.bitmenu_id}][bitmenu_icon]`,
+                                        value: v.bitmenu_icon
+                                    })))
+                                })
+                                $.each(data,(k,v)=>{
+                                    $('.zz').each(function(){
+                                        if ($(this).attr('id')!= `s${v.bitmenu_id}`){
+                                            $(this).append(rEl('option', {
+                                                value: v.bitmenu_id,
+                                                text: v.bittable_name,
+                                            }))
+                                        }
+                                    })
+                                })
+                            }
+                        });
+                    }
+
             })
                 .then(function () {
                     Render().CallSelect()

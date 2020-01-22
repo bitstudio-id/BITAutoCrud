@@ -15,12 +15,17 @@ class CreateBitformTable extends Migration
     {
         Schema::create('bitform', function (Blueprint $table) {
             $table->bigIncrements('bitform_id');
-            $table->string('bitform_label');
-            $table->string('bitform_input');
-            $table->string('bitform_type');
-            $table->string('bitform_url');
-            $table->jsonb('bitform_rules');
-            $table->jsonb('bitform_messages');
+            $table->unsignedBigInteger('bitform_bittable_id');
+            $table->foreign('bitform_bittable_id')
+                ->references('bittable_id')->on('bittable')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->string('bitform_label')->nullable();
+            $table->string('bitform_input')->nullable();
+            $table->string('bitform_type')->nullable();
+            $table->string('bitform_url')->nullable();
+            $table->jsonb('bitform_rules')->nullable();
+            $table->jsonb('bitform_messages')->nullable();
             $table->timestamps();
         });
     }
