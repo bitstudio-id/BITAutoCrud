@@ -636,28 +636,11 @@
     </div>
 @endsection
 @section('after_js')
+
     <script>
-        const capitalize = (s) => {
-            if (typeof s !== 'string') return ''
-            return s.charAt(0).toUpperCase() + s.slice(1)
-        };
-        $(window).bind('hashchange', function () {
-            let hash = window.location.hash;
-            Bits.Route(hash);
-        });
+
         $(function () {
-            $.get('{{route('bit.bitMenuGet')}}')
-            .done((data)=>{
-                if (data!='') {
-                    $.each(data,(k,v) => {
-                        $('#bit-menu').append(`<li class="nav-item">
-                <a class="nav-link" href="#${v.bittable_name}">
-                    <i class="nav-icon ${v.bitmenu_icon}"></i> ${capitalize(v.bittable_name)}
-                </a>
-            </li>`)
-                    });
-                }
-            });
+
         })
     </script>
 @endsection

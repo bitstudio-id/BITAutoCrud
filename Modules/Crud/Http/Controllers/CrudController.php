@@ -161,12 +161,12 @@ class CrudController extends Controller
         }
     }
 
-    public function bitMenuGet(Request $request){
+    public function bitMenuGet(){
         $data = DB::table('bitmenu')
             ->join('bittable','bittable_id','=','bitmenu_bittable_id')
             ->orderBy('bitmenu_index')
             ->get();
-        return response()->json($data);
+        return response()->json($data,!($data)->isEmpty() ? 200 : 500);
     }
 
     public function bitMenuSave(Request $request){

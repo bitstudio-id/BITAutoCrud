@@ -1,15 +1,35 @@
 'use strict';
 
+const capitalize = (s) => {
+    if (typeof s !== 'string') return ''
+    return s.charAt(0).toUpperCase() + s.slice(1)
+};
+
+$(window).bind('hashchange', function () {
+    Bits.Route(window.location.hash);
+});
+
+function loadMenu(){
+    const $this = $('#bit-menu');
+    $this.children().remove();
+    $.get('/bit/bitMenuGet')
+        .done((data)=>
+            $.each(data,(k,v) =>
+                $this.append(`<li class="nav-item">
+                            <a class="nav-link" href="#${v.bittable_name}">
+                                <i class="nav-icon ${v.bitmenu_icon}"></i> ${capitalize(v.bittable_name)}
+                            </a>
+                        </li>`)));
+}
 function save(p){
     var resForm=$('form').serializeArray();
-
         $.ajax({
             type: 'POST',
             url: p,
             data: resForm
         })
             .done((data)=>{
-                console.log(data);
+                Bits.Route(window.location.hash);
             });
     }
 const Bits = function () {
@@ -24,7 +44,22 @@ const Bits = function () {
         $ui.fadeOut().promise()
             .done(function () {
                 $ui.children().remove();
-                if (p!=='#bitmenu') {
+                if (p==='#bitform') {
+                    $ui.append(rEl('div', {class: "card"})
+                        .append(rEl('div', {id: "cForm", class: "card-body"})
+                            .append(rEl('form', {})
+                            ).append(rEl('div', {class: "card-footer"})
+                                .append(rEl('button',{
+                                    id:'save',
+                                    text:'Save',
+                                    class: 'btn btn-primary pull-right',
+                                    onclick: `save('${Bits.app}bit/save')`
+                                }))
+                            )
+
+                        ));
+                }
+                if (p==='#bittable') {
                     $ui.append(rEl('div', {class: "card"})
                         .append(rEl('div', {class: "card-header bg-primary text-white"})
                             .append(rEl('i', {class: "fa fa-edit"}), 'Form')
@@ -78,7 +113,7 @@ const Bits = function () {
                     Bits.childForm = f.child;
                     if (p==='#bitform'){
                         $.each(f,function (k,v) {
-                            $('#parent').append(rEl('div',{
+                            $('form').append(rEl('div',{
                                 class: `form-group ${k !== 0 ? 'col-sm-4' : ''}`
                             }).append(rEl(v.input,{
                                 id: v.id,
@@ -89,7 +124,9 @@ const Bits = function () {
                                 url: v.url
                             })))
                         });
-                    }else {
+                    }
+                    if (p==='#bittable')
+                    {
                         $.each(f.parent,function (k,v) {
                             $('#parent').append(rEl('div',{
                                 class: `form-group ${k !== 0 ? 'col-sm-4' : ''}`
@@ -188,12 +225,13 @@ const Bits = function () {
                                 })
                             }
                         });
+
                     }
 
             })
-                .then(function () {
-                    Render().CallSelect()
-                });
+                .then(() =>
+                    Render().CallSelect(),
+                    loadMenu());
         });
     };
     let Render = () => {
@@ -201,14 +239,17 @@ const Bits = function () {
         let Select = () => {
             $('select').each(function(){
                 let $t = $(this);
-                $.get($t.attr('url')).done((data) => {
-                    data[0] = {
-                        'id': '',"text":$t.attr('placeholder'),"title":$t.attr('placeholder')
-                    };
+                if (!$t.hasClass('select12-hidden-accessible')){
+                    $.get($t.attr('url')).done((data) => {
+                        data[0] = {
+                            'id': '',"text":$t.attr('placeholder'),"title":$t.attr('placeholder')
+                        };
 
-                }).then((data)=>$t.select2({
-                    data: data
-                }));
+                    }).then((data)=>$t.select2({
+                        data: data
+                    }));
+                }
+
             });
 
         };

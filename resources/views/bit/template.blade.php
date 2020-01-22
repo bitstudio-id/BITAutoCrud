@@ -23,7 +23,6 @@
             </div>
         </div>
     </main>
-    @include('bit.layouts.aside')
 </div>
 @include('bit.layouts.footer')
 @include('bit.layouts.js')
