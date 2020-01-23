@@ -15,8 +15,19 @@ class CrudController extends Controller
 {
     public function get(Request $request,$table)
     {
+
+        $data = new stdClass();
+        $data->form = DB::table('bitform')
+            ->leftJoin('bittable as c','c.bittable_id','=','bitform_bittable_id')
+            ->leftJoin('bittable as p', 'p.bittable_id','=','c.bittable_parent_id')
+            ->select('bitform.*')
+            ->addSelect('p.bittable_name')
+            ->where('p.bittable_name','=',$table)
+    ->get();
+        return response()->json($data);
         $data = DB::table($table);
-        return response()->json(isEmpty($request->id) ? $data->get() : $data->where($table.'_id','=',$request->id)->first());
+
+//        return response()->json(isEmpty($request->id) ? $data->get() : $data->where($table.'_id','=',$request->id)->first());
     }
     public function post(Request $request,$table)
     {
