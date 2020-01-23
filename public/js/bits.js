@@ -96,6 +96,7 @@ const Bits = function () {
 
                         ));
                 }
+
                 $ui.append(rEl('div', {class: "card"})
                     .append(rEl('div', {class: "card-header bg-primary text-white"})
                         .append(rEl('i', {class: "fa fa-table"}), 'Data Table')
