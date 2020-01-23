@@ -368,7 +368,7 @@ function cloneTag(set,index){
     data = set === 'child' ? Bits.childForm : Bits.joinForm;
     let cc = 'col-sm-4';
     console.log(data);
-    $(`#add-${set}`).attr('onclick',`cloneTag('${set}',${index+1})`);
+    $(`#add-${set}`).attr('onclick',`cloneTag('${set}',${index})`);
     $('form').append($('<div />', {
         class: `form-${set}-${index} row mt-4 border-bottom`
     })
@@ -381,6 +381,7 @@ function cloneTag(set,index){
             cc = `${k !== 0 ? 'col-sm-3' : ''}`
         }
         data[k].id = (v.id).replace(/\d/g, index);
+        data[k].name = v.name ? (v.name).replace(/\d/g, index) : v.id;
         $(`.form-${set}-${index}>div`)
             .append($('<div />', {
                 class: `form-group ${cc}`
@@ -390,7 +391,7 @@ function cloneTag(set,index){
                 }))
                 .append($(`<${v.input} />`, {
                     id: v.id,
-                    name: v.name ? v.name : v.id,
+                    name:  v.name,
                     type: v.type,
                     placeholder: v.label,
                     class: 'form-control',

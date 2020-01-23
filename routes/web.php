@@ -9,5 +9,5 @@ Route::get('/', function () {
 });
 Route::get('/test', function () {
 
-    return  response()->json(DB::select('DROP TABLE zas'));
+    return '"\asd"';
 });
