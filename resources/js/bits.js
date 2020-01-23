@@ -134,7 +134,8 @@ const Bits = function () {
                         $.each(f.parent,function (k,v) {
                             $('#parent').append(rEl('div',{
                                 class: `form-group ${k !== 0 ? 'col-sm-4' : ''}`
-                            }).append(rEl(v.input,{
+                            }).append(rEl('label',{text: v.label}))
+                                .append(rEl(v.input,{
                                 id: v.id,
                                 name: v.id,
                                 type: v.type,
@@ -147,7 +148,7 @@ const Bits = function () {
                             $('#child')
                                 .append(rEl('div',{
                                     class: `form-group ${k !== 0 ? 'col-sm-6' : ''}`
-                                })
+                                }).append(rEl('label',{text: v.label}))
                                     .append(rEl(v.input,{
                                         id: v.id,
                                         name: v.id,
