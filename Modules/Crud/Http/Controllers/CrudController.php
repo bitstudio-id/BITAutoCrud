@@ -13,9 +13,25 @@ use stdClass;
 
 class CrudController extends Controller
 {
-    public function get(Request $request, $table)
+    public function get(Request $request,$table)
     {
-
+        $data = DB::table($table);
+        return response()->json(isEmpty($request->id) ? $data->get() : $data->where($table.'_id','=',$request->id)->first());
+    }
+    public function post(Request $request,$table)
+    {
+        $data = DB::table($table)->updateOrInsert(
+            [
+                $table.'_id' => $request->$table.'_id'
+            ],
+            $request->all()
+        );
+        return response()->json($data,200);
+    }
+    public function delete(Request $request, $table)
+    {
+        $data = DB::table($table)->where($table.'_id','=',$request->id);
+        return response()->json($data,200);
     }
 
     public function bitGetDataTable(Request $request,$table){
