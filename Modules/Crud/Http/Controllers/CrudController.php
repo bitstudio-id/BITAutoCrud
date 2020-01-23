@@ -161,6 +161,15 @@ class CrudController extends Controller
         }
     }
 
+    public function bitDelete($id)
+    {
+        DB::beginTransaction();
+        $data = DB::table('bittable')->where('bittable_id','=',$id)->first();
+        DB::select('DROP TABLE '.$data->bittable_name);
+        $data->delete();
+        DB::commit();
+    }
+
     public function bitMenuGet(){
         $data = DB::table('bitmenu')
             ->join('bittable','bittable_id','=','bitmenu_bittable_id')

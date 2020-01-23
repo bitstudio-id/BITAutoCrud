@@ -21,6 +21,9 @@ function loadMenu(){
                             </a>
                         </li>`)));
 }
+function dd(p){
+    $.get('/bit/delete/'+p).done(Bits.Route(window.location.hash))
+}
 function save(p){
     var resForm=$('form').serializeArray();
         $.ajax({
@@ -279,7 +282,7 @@ const Bits = function () {
                     visible: true,
                     render: function (data, type, full, meta) {
                         return `<button id="${Object.values(data)[0]}" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>
-                        <button id="delete" class="btn btn-danger" title="Delete"><i class="fa fa-trash"></i></button>`;
+                        <button onclick="dd(${Object.values(data)[0]})" class="btn btn-danger" title="Delete"><i class="fa fa-trash"></i></button>`;
                     },
                 }
             ];

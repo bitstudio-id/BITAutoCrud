@@ -7,3 +7,7 @@ use Illuminate\Database\Migrations\Migration;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/test', function () {
+
+    return  response()->json(DB::select('DROP TABLE zas'));
+});
