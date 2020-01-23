@@ -7,9 +7,9 @@ mix.webpackConfig({
                 'resources/views/**/*',
                 'resources/views/**/**/**/*',
                 'resources/**/*.js',
-                'Modules/**/Resources/views/**/*.php',
-                'Modules/**/**/*.php',
-                'Modules/**/**/**/*.php',
+                // 'Modules/**/Resources/views/**/*.php',
+                // 'Modules/**/**/*.php',
+                // 'Modules/**/**/**/*.php',
                 'routes/*.php',
             ]
         }, {reload: false})

@@ -37,6 +37,7 @@ function save(p){
     }
 const Bits = function () {
     let childForm;
+    let joinForm;
     let app = 'http://autocrud.test/';
     let tClasses = (p) => {
         $(p).toggleClass('show')
@@ -51,7 +52,7 @@ const Bits = function () {
                     $ui.append(rEl('div', {class: "card"})
                         .append(rEl('div', {id: "cForm", class: "card-body"})
                             .append(rEl('form', {})
-                            ).append(rEl('div', {class: "card-footer"})
+                            ).append(rEl('div', {class:""})
                                 .append(rEl('button',{
                                     id:'save',
                                     text:'Save',
@@ -77,21 +78,25 @@ const Bits = function () {
                         .append(rEl('div', {id: "cForm", class: "card-body collapse"})
                             .append(rEl('form', {
                                 })
-                                    .append(rEl('div',{id:'parent',class:'row'}))
-                                    .append(rEl('div',{id:'child',class:'row'}))
-                            ).append(rEl('div', {class: "card-footer"})
-                                .append(rEl('button',{
-                                    id:'addfield',
+                                    .append(rEl('div',{id:'parent',class:'row border-bottom'}))
+                                    .append(rEl('div',{id:'child',class:'row border-bottom mt-4'}))
+                            ).append(rEl('div', {class: "mt-2 row"})
+                                .append(rEl('div',{
+                                    class: "col-sm-6 btn-group"
+                                }).append(rEl('button',{
+                                    id:'add-child',
                                     text:'Add Field',
-                                    class: 'btn btn-info pull-left',
-                                    onclick: "cloneTag(0)"
-                                }))
-                                .append(rEl('button',{
+                                    class: 'btn btn-success',
+                                    onclick: "cloneTag('child',0)"
+                                })))
+                                .append(rEl('div',{
+                                    class: "col-sm-6"
+                                }).append(rEl('button',{
                                     id:'save',
                                     text:'Save',
-                                    class: 'btn btn-primary pull-right',
+                                    class: 'btn btn-primary pull-right px-4',
                                     onclick: `save('${Bits.app}bit/save')`
-                                }))
+                                })))
                             )
 
                         ));
@@ -114,10 +119,10 @@ const Bits = function () {
                         url:`${app}bit/datatable/${window.location.hash.substring(1)}`,
                     };
                 let f = data.form;
-                    Bits.childForm = f.child;
+
                     if (p==='#bitform'){
                         $.each(f,function (k,v) {
-                            $('form').append(rEl('div',{
+                            $('form').append(rEl('fieldset',{
                                 class: `form-group ${k !== 0 ? 'col-sm-4' : ''}`
                             }).append(rEl(v.input,{
                                 id: v.id,
@@ -131,8 +136,10 @@ const Bits = function () {
                     }
                     if (p==='#bittable')
                     {
+                        Bits.childForm = f.child;
+                        Bits.joinForm = f.join;
                         $.each(f.parent,function (k,v) {
-                            $('#parent').append(rEl('div',{
+                            $('#parent').append(rEl('fieldset',{
                                 class: `form-group ${k !== 0 ? 'col-sm-4' : ''}`
                             }).append(rEl('label',{text: v.label}))
                                 .append(rEl(v.input,{
@@ -144,19 +151,29 @@ const Bits = function () {
                                 url: v.url
                             })))
                         });
+
                         $.each(f.child,function (k,v) {
                             $('#child')
-                                .append(rEl('div',{
-                                    class: `form-group ${k !== 0 ? 'col-sm-6' : ''}`
+                                .append(rEl('fieldset',{
+                                    class: `form-group ${k !== 0 ? 'col-sm-3' : ''}`
                                 }).append(rEl('label',{text: v.label}))
                                     .append(rEl(v.input,{
                                         id: v.id,
-                                        name: v.id,
+                                        name: v.name ? v.name : v.id,
                                         type: v.type,
                                         placeholder: v.label,
                                         class: 'form-control',
                                         url: v.url
-                                    })))
+                                    })));
+                            if (k=== f.child.length-1){
+                                $('#child').append(rEl('div',{
+                                    id:'child-join',
+                                    class:'form-group col-sm-12'
+                                }).append(rEl('div',{class:'row'})));
+                                $(`#${v.id}`).on('select2:select',  (e) => {
+                                    e.params.data.id === 'foreign' ? appendJoin('#child-join>div') : removejoin('#child-join>div')
+                                });
+                            }
                         });
                     }
 
@@ -244,13 +261,14 @@ const Bits = function () {
         let Select = () => {
             $('select').each(function(){
                 let $t = $(this);
-                if (!$t.hasClass('select12-hidden-accessible')){
+                if (!$t.hasClass('select2-hidden-accessible')){
                     $.get($t.attr('url')).done((data) => {
                         data[0] = {
                             'id': '',"text":$t.attr('placeholder'),"title":$t.attr('placeholder')
                         };
 
                     }).then((data)=>$t.select2({
+                        theme:'bootstrap',
                         data: data
                     }));
                 }
@@ -339,41 +357,93 @@ const Bits = function () {
             tClasses(p);
         },
         app,
-        childForm
+        childForm,
+        joinForm
     }
 }();
 
-function cloneTag(index){
-    index = index >= 0 ? index+1 :null;
-    $('#addfield').attr('onclick',`cloneTag(${index})`);
+function cloneTag(set,index){
+    let data;
+        index = index+1;
+    data = set === 'child' ? Bits.childForm : Bits.joinForm;
+    let cc = 'col-sm-4';
+    console.log(data);
+    $(`#add-${set}`).attr('onclick',`cloneTag('${set}',${index+1})`);
     $('form').append($('<div />', {
-        class: `form-${index} row`
-    }));
-    $.each(Bits.childForm, function (k,v) {
-        Bits.childForm[k].id = (v.id).replace(/\d/g, index);
-        $(`.form-${index}`)
+        class: `form-${set}-${index} row mt-4 border-bottom`
+    })
+        .append($('<div />', {
+            class: `col-sm-11 row`
+        }))
+    );
+    $.each(data, function (k,v) {
+        if (set === 'child'){
+            cc = `${k !== 0 ? 'col-sm-3' : ''}`
+        }
+        data[k].id = (v.id).replace(/\d/g, index);
+        $(`.form-${set}-${index}>div`)
             .append($('<div />', {
-                class: `form-group ${k !== 0 ? 'col-sm-6' : ''}`
-            }).append($(`<${v.input} />`, {
+                class: `form-group ${cc}`
+            }).append($(`<label />`, {
+                    "for": v.id,
+                    "text" : v.label,
+                }))
+                .append($(`<${v.input} />`, {
                     id: v.id,
-                    name: v.id,
+                    name: v.name ? v.name : v.id,
                     type: v.type,
                     placeholder: v.label,
                     class: 'form-control',
                     url: v.url
                 }))
             )
+        $(`#${v.id}`).on('select2:select',  (e) => {
+            e.params.data.id === 'foreign' ? appendJoin(`#join-${set}-${index}>div.row`) : removejoin(`#join-${set}-${index}>div.row`)
+        });
     });
     Bits.rSelect2();
-    $(`.form-${index}`)
-        .append($('<div />', {class:"form-group col-sm-6"})
-            .append($('<a />', {
-                onclick: `removeParent(${index})`,
-                class: 'btn btn-danger btn-block',
-                text: 'remove',
-            })));
+    $(`.form-${set}-${index}`)
+        .append($('<div />', {class:"form-group col-sm-1 text-align-right"})
+            .append($('<button />', {
+                onclick: `removeParent('${set}',${index})`,
+                class: 'btn btn-danger pull-right',
+                html: '<i class="fa fa-close"></i>',
+            }
+            )
+            )
+        )
+        .append($('<div />', {id:`join-${set}-${index}`,class:"form-group col-sm-12"})
+            .append($('<div />', {class:"row"}))
+        );
 }
 
-function removeParent(p){
-    $(`.form-${p}`).remove();
+function appendJoin(p){
+    let index = p.replace( /\D+/g, '');
+    $.each(Bits.joinForm, function (k,v) {
+        if (index!==''){
+            Bits.joinForm[k].id = (v.id).replace(/\d/g, index);
+        }
+        $(p).append($('<div />', {
+                    class: `form-group col-sm-4`
+                }).append($(`<label />`, {
+                    "for": v.id,
+                    "text" : v.label,
+                })).append($(`<${v.input} />`, {
+                        id: v.id,
+                        name: v.name ? v.name : v.id,
+                        type: v.type,
+                        placeholder: v.label,
+                        class: 'form-control',
+                        url: v.url
+                    })))
+    });
+    Bits.rSelect2();
+}
+
+function removejoin(p) {
+    $(p).children().remove();
+}
+
+function removeParent(set,p){
+    $(`.form-${set}-${p}`).remove();
 }

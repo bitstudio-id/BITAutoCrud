@@ -101,13 +101,16 @@ class CrudController extends Controller
                 'child' =>
                     [
                         ['label' => "", 'id' => "field[$index][bittable_id]", 'input' => "input", 'type' => "hidden", 'url' => ""],
-                        ['label' => "Field Type", 'id' => "field[$index][bittable_type]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_type')],
                         ['label' => "Field Name", 'id' => "field[$index][bittable_name]", 'input' => "input", 'type' => "text", 'url' => ""],
+                        ['label' => "Field Type", 'id' => "field[$index][bittable_type]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_type')],
                         ['label' => "Field Length/Value", 'id' => "field[$index][bittable_length]", 'input' => "input", 'type' => "text", 'url' => ""],
 //                    ['label' => "Field Default", 'id' => "field[$index][bittable_default]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_default')],
-                        ['label' => "Field Attributes", 'id' => "field[$index][bittable_attributes]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_attributes')],
+                        ['label' => "Field Attributes", 'id'=>'bittable_attributes-'.$index,  'name' => "field[$index][bittable_attributes]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_attributes')],
+                    ],
+                'join' =>
+                    [
+                        ['label' => "Join Table Primary", 'id' => "field[$index][bittable_join_to_id]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_to_id')],
                         ['label' => "Join Table Type", 'id' => "field[$index][bittable_join]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_join')],
-                        ['label' => "Join To ID", 'id' => "field[$index][bittable_join_to_id]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_to_id')],
                     ],
             ];
         }
@@ -258,12 +261,12 @@ class CrudController extends Controller
             case 'bittable_to_id' :
                 $data = [0];
                 $parent = DB::table('bittable')
-                    ->select('bittable_id as id', 'bittable_parent_id', 'bittable_name as name', 'bittable_type')
+                    ->select('bittable_id as id', 'bittable_parent_id', 'bittable_name as name', 'bittable_type','bittable_attributes')
                     ->get();
                 foreach ($parent as $k => $v) {
                     if ($v->bittable_type === 'table') {
                         foreach ($parent as $key => $child) {
-                            if ($child->bittable_parent_id === $v->id && $child->bittable_type !== 'table') {
+                            if ($child->bittable_parent_id === $v->id && $child->bittable_attributes === 'primary'  ) {
                                 $child->text[] = $v->name . ' → ' . $child->name;
                                 $data[] = $child;
                             }
@@ -344,8 +347,8 @@ class CrudController extends Controller
             case 'bittable_attributes' :
                 $data = [
                     0,
-                    ["id" => 'unsigned', "text" => "UNSIGNED"],
                     ["id" => 'primary', "text" => "PRIMARY"],
+                    ["id" => 'foreign', "text" => "FOREIGN"],
                     ["id" => 'unique', "text" => "UNIQUE"]
                 ];
                 break;
