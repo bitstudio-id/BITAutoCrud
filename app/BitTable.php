@@ -17,10 +17,11 @@ class BitTable extends Model
         'bittable_attributes',
         'bittable_join',
         'bittable_join_to_id',
+        'bittable_join_value',
     ];
     public function child()
     {
-        return $this->hasMany(BitTable::class,'bittable_parent_id',$this->primaryKey);
+        return $this->hasOne(BitTable::class,'bittable_parent_id',$this->primaryKey)->with('form','join');
     }
     public function parent()
     {
@@ -28,6 +29,10 @@ class BitTable extends Model
     }
     public function join()
     {
-        return $this->belongsTo(BitTable::class,'bittable_join_to_id',$this->primaryKey);
+        return $this->hasMany(BitTable::class,'bittable_join_to_id',$this->primaryKey);
+    }
+    public function form()
+    {
+        return $this->hasOne(BitForm::class,'bitform_bittable_id',$this->primaryKey);
     }
 }

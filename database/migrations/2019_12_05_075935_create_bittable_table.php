@@ -16,13 +16,14 @@ class CreateBittableTable extends Migration
         Schema::create('bittable', function (Blueprint $table) {
             $table->bigIncrements('bittable_id');
             $table->unsignedBigInteger('bittable_parent_id')->nullable();
-            $table->string('bittable_name');
+            $table->string('bittable_name')->unique();
             $table->string('bittable_type')->nullable();
             $table->text('bittable_length')->nullable();
 //            $table->text('bittable_default')->nullable();
             $table->text('bittable_attributes')->nullable();
             $table->enum('bittable_join',['left','right','inner'])->nullable();
             $table->unsignedBigInteger('bittable_join_to_id')->nullable();
+            $table->unsignedBigInteger('bittable_join_value')->nullable();
             $table->timestamps();
         });
     }
