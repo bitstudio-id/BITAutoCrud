@@ -21,7 +21,7 @@ class BitTable extends Model
     ];
     public function child()
     {
-        return $this->hasOne(BitTable::class,'bittable_parent_id',$this->primaryKey)->with('form','join');
+        return $this->hasMany(BitTable::class,'bittable_parent_id',$this->primaryKey)->with('form','join');
     }
     public function parent()
     {

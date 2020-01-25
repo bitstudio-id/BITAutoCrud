@@ -2,6 +2,7 @@
 
 namespace Modules\Crud\Http\Controllers;
 
+use App\BitTable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -14,17 +15,14 @@ class CrudController extends Controller
     {
         $data = new stdClass();
         $data->column = [];
-        $data->form = DB::table('bitform')
-            ->leftJoin('bittable as c','c.bittable_id','=','bitform_bittable_id')
-            ->leftJoin('bittable as p', 'p.bittable_id','=','c.bittable_parent_id')
-            ->select('bitform.*')
-            ->addSelect('p.bittable_name')
-            ->where('p.bittable_name','=',$table)
-            ->get();
+        $form=[];
+        $data->form = BitTable::with('child')->where('bittable_name','=',$table)->first();
         $data->column[]=["title"=>"No", "data"=> null, "name"=> null];
-        foreach ($data->form as $key=>$value) {
-//            $data->column[] =
+        foreach ($data->form->child as $key=>$value) {
+            $data->column[] = ["title"=>$value->form->bitform_label, "data"=> $value->bittable_name, "name"=> $value->bittable_name];
+            $form[] = $value->form;
         }
+        $data->form = $form;
         $data->column[]=["title"=>"Action", "data"=> null, "name"=> null];
 
         $data->data = DB::table($table)
