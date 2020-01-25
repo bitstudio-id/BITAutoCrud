@@ -50,22 +50,61 @@ const Bits = function () {
         let $ui = $('#ui-view');
         $ui.fadeOut().promise()
             .done(function () {
-                $ui.children().remove();
+                $ui.empty();
                 $ui.append(rEl('div', {class: "card"})
                     .append(rEl('div', {class: "card-header bg-primary text-white"})
                         .append(rEl('i', {class: "fa fa-table"}), 'Data Table')
                         .append(rEl('div', {class: "card-header-actions"})))
                     .append(rEl('div', {class: "card-body"})
-                        .append(rEl('table', {id: `${p.substring(1)}-table`,class: 'table table-striped table-bordered datatable'}))))
+                        .append(rEl('table', {id: `${p.substring(1)}-table`,class: 'table table-striped table-bordered'}))))
             }).then(function () {
             $ui.fadeIn();
+            $ui.prepend(rEl('div',{class:"card"})
+                .append(rEl('div',{class: "card-header bg-primary text-white"})
+                    .append(rEl('i', {class: "fa fa-edit"}), 'Form')
+                    .append(rEl('div', {class: "card-header-actions"})))
+                .append(rEl('div', {class: "card-body"})
+                    .append(rEl('form', {class: 'form row'}))
+                    .append(rEl('button', {class: 'btn btn-primary',text:'save',onclick:`crudSave("${p.substring(1)}")`}))))
             $.get(`${app}crud/get/${window.location.hash.substring(1)}`)
                 .done((data) => {
-                    console.log(data)
+                    let param = {
+                        id: p,
+                        c:data.column,
+                        url:`${app}crud/datatable/${window.location.hash.substring(1)}`,
+                    };
+                    $.each(data.form,(k,v)=>{
+                        if (v.form.bitform_type==='hidden'){
+                            $('form')
+                                    .append(rEl(v.form.bitform_input,
+                                        {
+                                            id:`${v.form.bitform_input}-${v.bittable_name}`,
+                                            name: `${v.bittable_name}`,
+                                            type: v.form.bitform_type,
+                                            class: 'form-control'
+                                        }))
+                        }else{
+                            $('form')
+                                .append(rEl('div',{class:'form-group col-3'})
+                                    .append(rEl('label',{text:v.form.bitform_label}))
+                                    .append(rEl(v.form.bitform_input,
+                                        {
+                                            id:`${v.form.bitform_input}-${v.bittable_name}`,
+                                            name: `${v.bittable_name}`,
+                                            type: v.form.bitform_type,
+                                            class: 'form-control',
+                                            url:`/crud/select${v.form.bitform_url}`,
+                                            placeholder: `${v.form.bitform_label}`
+                                        })))
+                        }
+
+                    },Render().CallDataTable(param)); Bits.rSelect2()
                 })
         });
     };
     let Route = (p) => {
+        let $ui = $('#ui-view');
+        let rEl = (elem, option) => Render().CallElement(elem, option);
         let formRender = (param,f) => {
             switch (param) {
                 case '#bitmenu' :
@@ -164,12 +203,36 @@ const Bits = function () {
                     });
                     break;
                 default :
+                    $ui.prepend(rEl('div', {class: "card"})
+                        .append(rEl('div', {class: "card-header bg-primary text-white"})
+                            .append(rEl('i', {class: "fa fa-edit"}), 'Form Query')
+                            .append(rEl('div', {class: "card-header-actions"})))
+                        .append(rEl('div', {class: "card-body"})
+                            .append(rEl('form', {class: 'row'})
+                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
+                                    class: 'form-control'
+                                })))
+                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
+                                    class: 'form-control'
+                                })))
+                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
+                                    class: 'form-control'
+                                })))
+                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
+                                    class: 'form-control'
+                                })))
+                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
+                                    class: 'form-control'
+                                })))
+                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
+                                    class: 'form-control'
+                                }))))
 
+
+                        ));
                     break;
             }
         };
-        let rEl = (elem, option) => Render().CallElement(elem, option);
-        let $ui = $('#ui-view');
         $ui.fadeOut().promise()
             .done(function () {
                 $ui.children().remove();
@@ -211,13 +274,12 @@ const Bits = function () {
 
                         ));
                 }
-
                 $ui.append(rEl('div', {class: "card"})
                     .append(rEl('div', {class: "card-header bg-primary text-white"})
                         .append(rEl('i', {class: "fa fa-table"}), 'Data Table')
                         .append(rEl('div', {class: "card-header-actions"})))
                     .append(rEl('div', {class: "card-body"})
-                        .append(rEl('table', {id: `${p.substring(1)}-table`,class: 'table table-striped table-bordered datatable'}))))
+                        .append(rEl('table', {id: `${p.substring(1)}-table`,class: 'table table-striped table-bordered'}))))
             }).then(function () {
             $ui.fadeIn();
             /*init datatable*/
@@ -230,11 +292,9 @@ const Bits = function () {
                     };
                     let f = data.form;
                     formRender(p,f);
-                    if (p!=='#bitmenu') {
+                    if (p!=='#bitmenu' && p!=='#bitquery') {
                         Render().CallDataTable(param);
                     }
-
-
             })
                 .then(() =>
                     Render().CallSelect(),
@@ -482,4 +542,14 @@ function editForm(p){
         });
         Bits.rSelect2();
     }).then();
+}
+function crudSave(p){
+    $.ajax({
+        type: 'POST',
+        url: `/crud/post/${p}`,
+        data: $('form').serializeArray()
+    })
+        .done((data)=>{
+            Bits.Crud(window.location.hash);
+        });
 }

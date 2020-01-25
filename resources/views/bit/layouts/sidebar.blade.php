@@ -20,7 +20,7 @@
                     <i class="nav-icon icon-list"></i> Menu</a>
             </li>
             <li class="nav-item nav-dropdown">
-                <a class="nav-link" href="#link-query">
+                <a class="nav-link" href="#bitquery">
                     <i class="nav-icon icon-vector"></i> Query</a>
             </li>
             <li class="nav-item nav-dropdown">

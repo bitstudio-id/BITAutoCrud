@@ -636,9 +636,7 @@
     </div>
 @endsection
 @section('after_js')
-
     <script>
-
         $(function () {
 
         })

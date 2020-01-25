@@ -20,14 +20,32 @@ class CrudController extends Controller
         $data->column[]=["title"=>"No", "data"=> null, "name"=> null];
         foreach ($data->form->child as $key=>$value) {
             $data->column[] = ["title"=>$value->form->bitform_label, "data"=> $value->bittable_name, "name"=> $value->bittable_name];
-            $form[] = $value->form;
+            $form[] = $value;
         }
         $data->form = $form;
         $data->column[]=["title"=>"Action", "data"=> null, "name"=> null];
-
-        $data->data = DB::table($table)
-            ->get();
+        $data->data = DB::table($table)->get();
         return response()->json($data);
+    }
+    public function dataTable(Request $request,$table)
+    {
+        $data = new stdClass();
+        $data->data = DB::table($table)->get();
+        return response()->json($data);
+    }
+    public function select(Request $request)
+    {
+        if ($request->has('id')){
+            $id = BitTable::where('bittable_id', $request->id)
+                ->with('parent')
+                ->first();
+            $text = BitTable::where('bittable_id', $request->text)
+                ->first()->bittable_name;
+            $data = DB::table($id->parent->bittable_name)->select($id->bittable_name.' as id',$text.' as text')->get();
+            $data->prepend(0);
+            return $data;
+        }
+
     }
     public function post(Request $request,$table)
     {
