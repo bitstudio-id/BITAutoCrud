@@ -89,8 +89,8 @@ class BITController extends Controller
                     ],
                 'join' =>
                     [
-                        ['label' => "Join Table Primary", 'id' => "field[$index][bittable_join_to_id]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_to_id')],
                         ['label' => "Join Table Type", 'id' => "field[$index][bittable_join]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_join')],
+                        ['label' => "Join Table Primary", 'id' => "field[$index][bittable_join_to_id]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_to_id')],
                         ['label' => "Join Table Scope Value", 'id' => "field[$index][bittable_join_value]", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bittable_join_value')],
                     ],
             ];
@@ -101,6 +101,15 @@ class BITController extends Controller
 
     public function bitSave(Request $request)
     {
+        if ($request->has('id')){
+            foreach ($request->field as $k => $v){
+                DB::table('bitform')->updateOrInsert(
+                    ['bitform_bittable_id'=>$v['bitform_bittable_id']],
+                    $v
+                );
+            }
+            return \response()->json('success',200);
+        }
         $field = '';
         DB::beginTransaction();
 
@@ -124,13 +133,30 @@ class BITController extends Controller
                     ['bittable_id' => $val['bittable_id']],
                     $val
                 );
+                $bitform_url = '';
+                $input = 'input';
+                $type = '';
+                if ($c->bittable_type === 'ENUM') {
+                    $input = 'select';
+                    $bitform_url = $val['bittable_length'];
+                } else if ($c->bittable_type === 'TEXT') {
+                    $input = 'textarea';
+                } else if ($c->bittable_type === 'DATE') {
+                    $type = 'date';
+                }
+
+                if ($c->bittable_attributes === 'foreign') {
+                    $input = 'select';
+                    $bitform_url = '?id='.$val['bittable_join_to_id'].'&text='.$val['bittable_join_value'];
+                }
                 DB::table('bitform')->updateOrInsert(
                     ['bitform_bittable_id' => $c->bittable_id],
                     [
                         'bitform_bittable_id' => $c->bittable_id,
                         'bitform_label' => $c->bittable_name,
-                        'bitform_input' => 'text',
-                        'bitform_type' => 'text'
+                        'bitform_input' => $input,
+                        'bitform_type' => $type,
+                        'bitform_url' =>$bitform_url,
                     ]
                 );
             }
@@ -182,9 +208,12 @@ class BITController extends Controller
     public function bitDelete($id)
     {
         DB::beginTransaction();
-        $data = DB::table('bittable')->where('bittable_id','=',$id)->first();
-        DB::select('DROP TABLE '.$data->bittable_name);
-        $data->delete();
+        $data = DB::table('bittable')->where('bittable_id','=',$id);
+        DB::select('DROP TABLE '.$data->first()->bittable_name);
+        try {
+            $data->delete();
+        } catch (\Exception $e) {
+        }
         DB::commit();
     }
 
@@ -208,9 +237,14 @@ class BITController extends Controller
 
     }
 
-    public function select($p)
+    public function select($p,Request $request)
     {
         $data = [];
+        if ($request->has('id')) {
+            $data = DB::table($p)->select($request->id.' as id',$request->text.' as text')->get();
+            $data->prepend(0);
+
+        }
         switch ($p) {
             case 'bittable_join_value':
                 $data = [0];
@@ -221,7 +255,7 @@ class BITController extends Controller
                     if ($v->bittable_type === 'table') {
                         foreach ($parent as $key => $child) {
                             if ($child->bittable_parent_id === $v->id && $child->bittable_attributes !== 'primary'  ) {
-                                $child->text[] = $v->name . ' → ' . $child->name;
+                                $child->text = $v->name . ' → ' . $child->name;
                                 $data[] = $child;
                             }
                         }
@@ -240,12 +274,12 @@ class BITController extends Controller
                 $data = [
                     0,
                     ["id" => 'text', "text" => "text"],
-                    ["id" => 'email', "text" => "email"],
-                    ["id" => 'radio', "text" => "radio"],
-                    ["id" => 'file', "text" => "file"],
-                    ["id" => 'password', "text" => "password"],
+                    ["id" => 'hidden', "text" => "hidden"],
                     ["id" => 'number', "text" => "number"],
-                    ["id" => 'checkbox', "text" => "checkbox"],
+                    ["id" => 'email', "text" => "email"],
+//                    ["id" => 'radio', "text" => "radio"],
+                    ["id" => 'password', "text" => "password"],
+//                    ["id" => 'checkbox', "text" => "checkbox"],
                     ["id" => 'date', "text" => "date"],
                 ];
                 break;
@@ -266,7 +300,7 @@ class BITController extends Controller
                     if ($v->bittable_type === 'table') {
                         foreach ($parent as $key => $child) {
                             if ($child->bittable_parent_id === $v->id && $child->bittable_attributes === 'primary'  ) {
-                                $child->text[] = $v->name . ' → ' . $child->name;
+                                $child->text = $v->name . ' → ' . $child->name;
                                 $data[] = $child;
                             }
                         }

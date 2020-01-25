@@ -303,7 +303,7 @@ const Bits = function () {
             });
         };
         let Form = (p) => {
-            console.log(p);
+
         };
         return {
             CallButton: (p) => Button(p),
@@ -341,7 +341,6 @@ function cloneTag(set,index){
         index = index+1;
     data = set === 'child' ? Bits.childForm : Bits.joinForm;
     let cc = 'col-sm-4';
-    console.log(data);
     $(`#add-${set}`).attr('onclick',`cloneTag('${set}',${index})`);
     $('form').append($('<div />', {
         class: `form-${set}-${index} row mt-4 border-bottom`
@@ -424,7 +423,6 @@ function removeParent(set,p){
 }
 function editForm(p){
     let rEl = (elem, option) => $("<" + elem + " />", option);
-    console.log($("#ui-view>div").children().length)
     $("#ui-view>div").children().length !== 2 ? $('#ui-view>div').first().remove() : null;
     $('#ui-view').prepend(rEl('div', {class: "card"})
         .append(rEl('div', {id: "cForm", class: "card-body"})
@@ -434,7 +432,7 @@ function editForm(p){
                     id:'save',
                     text:'Save',
                     class: 'btn btn-primary pull-right',
-                    onclick: `save('${Bits.app}bit/save')`
+                    onclick: `save('${Bits.app}bit/save?id=${p}')`
                 })))));
     let $this = $('#cForm>form');
     $.get(`/bit/bitGetDataDetail/${p}`).done((data)=>{

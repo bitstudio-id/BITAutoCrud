@@ -16,6 +16,10 @@ class CreateBittableTable extends Migration
         Schema::create('bittable', function (Blueprint $table) {
             $table->bigIncrements('bittable_id');
             $table->unsignedBigInteger('bittable_parent_id')->nullable();
+            $table->foreign('bittable_parent_id')
+                ->references('bittable_id')->on('bittable')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->string('bittable_name')->unique();
             $table->string('bittable_type')->nullable();
             $table->text('bittable_length')->nullable();
