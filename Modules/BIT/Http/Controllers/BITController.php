@@ -12,10 +12,19 @@ use stdClass;
 
 class BITController extends Controller
 {
+    public function bitGetDataDetail($id){
+        $data = BitTable::with('join','form','parent')
+            ->where('bittable_parent_id','=',$id)
+            ->get();
+        return response()->json($data);
+    }
+
     public function bitGetDataTable(Request $request,$table){
         $data = new stdClass();
         if ($table==='bitform') {
-            $data->data = BitTable::with('child')->whereNull('bittable_parent_id')->get();
+            $data->data = BitTable::with('child')
+                ->whereNull('bittable_parent_id')
+                ->get();
         }else{
             $data->data = DB::table($table)->select($table . '.*')
                 ->get();
@@ -32,10 +41,14 @@ class BITController extends Controller
     public function bitGetForm(Request $request, $table, $index = 0)
     {
         $data = new stdClass();
+        $ex = ['created_at', 'updated_at'];
         $column = [];
         $column[] = ["title"=>"No", "data"=> null, "name"=> null];
-        $ex = ['created_at', 'updated_at'];
         $scheme = Schema::getColumnListing($table);
+        if ($table==='bitform'){
+            array_push($ex,'bittable_parent_id','bittable_type','bittable_length','bittable_attributes','bittable_join','bittable_join_to_id','bittable_join_value');
+            $scheme = Schema::getColumnListing('bittable');
+        }
         $scheme = array_merge(array_diff($scheme, $ex));
         foreach ($scheme as $v) {
             $ob = new stdClass();

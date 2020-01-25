@@ -29,6 +29,10 @@ class BitTable extends Model
     }
     public function join()
     {
+        return $this->belongsTo(BitTable::class,'bittable_join_to_id',$this->primaryKey);
+    }
+    public function joins()
+    {
         return $this->hasMany(BitTable::class,'bittable_join_to_id',$this->primaryKey);
     }
     public function form()

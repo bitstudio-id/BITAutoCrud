@@ -3,6 +3,7 @@
 Route::prefix('/bit')->group(function() {
     Route::get('/get/{table}', 'BITController@bitGetForm')->name('bit.get');
     Route::get('/datatable/{table}', 'BITController@bitGetDataTable')->name('bit.datatable');
+    Route::get('/bitGetDataDetail/{id}', 'BITController@bitGetDataDetail')->name('bit.bitGetDataDetail');
     Route::get('/bitMenuGet', 'BITController@bitMenuGet')->name('bit.menuget');
     Route::post('/save', 'BITController@bitSave')->name('bit.save');
     Route::get('/delete/{id}', 'BITController@bitDelete')->name('bit.delete');

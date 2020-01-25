@@ -15,7 +15,7 @@ class CreateBitmenuTable extends Migration
     {
         Schema::create('bitmenu', function (Blueprint $table) {
             $table->bigIncrements('bitmenu_id');
-            $table->unsignedBigInteger('bitmenu_parent_id')->nullable();
+//            $table->unsignedBigInteger('bitmenu_parent_id')->nullable();
 //            $table->foreign('bitmenu_parent_id')
 //                ->references('bitmenu_id')->on('bitmenu')
 //                ->onDelete('cascade')
