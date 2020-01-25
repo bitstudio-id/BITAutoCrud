@@ -24,8 +24,8 @@ class CreateBitformTable extends Migration
             $table->string('bitform_input')->nullable();
             $table->string('bitform_type')->nullable();
             $table->string('bitform_url')->nullable();
-            $table->jsonb('bitform_rules')->nullable();
-            $table->jsonb('bitform_messages')->nullable();
+//            $table->jsonb('bitform_rules')->nullable();
+//            $table->jsonb('bitform_messages')->nullable();
             $table->timestamps();
         });
     }

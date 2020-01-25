@@ -51,21 +51,6 @@ const Bits = function () {
         $ui.fadeOut().promise()
             .done(function () {
                 $ui.children().remove();
-                if (p==='#bitform') {
-                    $ui.append(rEl('div', {class: "card"})
-                        .append(rEl('div', {id: "cForm", class: "card-body"})
-                            .append(rEl('form', {})
-                            ).append(rEl('div', {class:""})
-                                .append(rEl('button',{
-                                    id:'save',
-                                    text:'Save',
-                                    class: 'btn btn-primary pull-right',
-                                    onclick: `save('${Bits.app}bit/save')`
-                                }))
-                            )
-
-                        ));
-                }
                 if (p==='#bittable') {
                     $ui.append(rEl('div', {class: "card"})
                         .append(rEl('div', {class: "card-header bg-primary text-white"})
@@ -124,22 +109,7 @@ const Bits = function () {
                 let f = data.form;
 
                     if (p==='#bitform'){
-                        $('form').append(rEl('div',{
-                            class: `row`
-                        }));
                         Bits.genForm = f;
-                        $.each(f,function (k,v) {
-                            $('form>div').append(rEl('fieldset',{
-                                class: `form-group ${k !== 0 ? 'col-sm-4' : ''}`
-                            }).append(rEl(v.input,{
-                                id: v.id,
-                                name: v.id,
-                                type: v.type,
-                                placeholder: v.label,
-                                class: 'form-control',
-                                url: v.url
-                            })))
-                        });
                     }
                     if (p==='#bittable')
                     {
@@ -453,24 +423,39 @@ function removeParent(set,p){
     $(`.form-${set}-${p}`).remove();
 }
 function editForm(p){
-    let $this = $('#cForm>form>div.row');
     let rEl = (elem, option) => $("<" + elem + " />", option);
-    $this.children().remove();
+    console.log($("#ui-view>div").children().length)
+    $("#ui-view>div").children().length !== 2 ? $('#ui-view>div').first().remove() : null;
+    $('#ui-view').prepend(rEl('div', {class: "card"})
+        .append(rEl('div', {id: "cForm", class: "card-body"})
+            .append(rEl('form', {})
+            ).append(rEl('div', {class:""})
+                .append(rEl('button',{
+                    id:'save',
+                    text:'Save',
+                    class: 'btn btn-primary pull-right',
+                    onclick: `save('${Bits.app}bit/save')`
+                })))));
+    let $this = $('#cForm>form');
     $.get(`/bit/bitGetDataDetail/${p}`).done((data)=>{
+        $this.text(`Table ${data[0].parent.bittable_name} Form`);
         $.each(data,(k,v)=>{
+            $this.append(rEl('div',{id:`block-${k}` ,class:'row shadow p-3 mb-5 bg-white rounded'}));
             $.each(Bits.genForm,(kk,vv)=>{
-                $this.append(rEl('fieldset',{
-                    class: `form-group ${kk !== 0 ? 'col-sm-4' : ''}`
-                }).append(rEl(vv.input,{
+                $(`#block-${k}`).append(rEl('fieldset',{
+                    class: `form-group ${kk !== 0 ? 'col-sm-3' : ''}`
+                }).append(rEl('label',{text:
+                    vv.label}))
+                    .append(rEl(vv.input,{
                     id: `input-${v.bittable_id}-${vv.id}`,
                     name: `field[${v.bittable_id}][${vv.id}]`,
                     type: vv.type,
-                    placeholder: vv.label,
                     class: 'form-control',
                     url: vv.url,
                     value: data[k].form[vv.id]
                 })))
             });
+
         });
         Bits.rSelect2();
     }).then();

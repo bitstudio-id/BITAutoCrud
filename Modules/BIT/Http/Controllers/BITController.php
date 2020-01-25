@@ -67,8 +67,8 @@ class BITController extends Controller
                 ['label' => "Field Type", 'id' => "bitform_input", 'input' => "select", 'type' => "select", 'url' => route('bit.select', 'bitform_input')],
                 ['label' => "Mode", 'id' => "bitform_type", 'input' => "select", 'type' => "select", 'url' =>  route('bit.select', 'bitform_type')],
                 ['label' => "Url Data", 'id' => "bitform_url", 'input' => "input", 'type' => "text", 'url' => ""],
-                ['label' => "Rules Validate", 'id' => "bitform_rules", 'input' => "input", 'type' => "text", 'url' => ""],
-                ['label' => "Message Handle", 'id' => "bitform_messages", 'input' => "input", 'type' => "text", 'url' => ""],
+//                ['label' => "Rules Validate", 'id' => "bitform_rules", 'input' => "input", 'type' => "text", 'url' => ""],
+//                ['label' => "Message Handle", 'id' => "bitform_messages", 'input' => "input", 'type' => "text", 'url' => ""],
             ];
         } else {
             $data->form = [
