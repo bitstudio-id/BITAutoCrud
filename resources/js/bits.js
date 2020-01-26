@@ -8,9 +8,30 @@ const capitalize = (s) => {
 $(window).bind('hashchange', function () {
     const arr= ['#bitform','#bitmenu','#bittable','#bitquery'];
     $.inArray(window.location.hash,arr) !== -1 ? Bits.Route(window.location.hash) : Bits.Crud(window.location.hash);
-
 });
+function execute() {
+    let rEl = (elem, option) => $("<" + elem + " />", option);
+    var $form = $('form').serializeArray();
+    $.ajax({
+        type: 'get',
+        url: '/bit/query',
+        data: $form
+    })
+        .done((data)=>{
+            $('table').append(rEl('thead').append(rEl('tr')))
+                .append(rEl('tbody'));
+            $.each(data.th,function (k,v) {
+                $('table>thead>tr').append(rEl('td',{text:v}))
+            });
+            $.each(data.data,function (k,v) {
+                $('table>tbody').append(rEl('tr',{class: `tr-${k}`}));
+                $.each(v,function (kk,vv) {
+                    $(`.tr-${k}`).append(rEl('td',{text:vv}))
+                })
+            })
+        });
 
+};
 function loadMenu(){
     const $this = $('#bit-menu');
     $this.children().remove();
@@ -209,27 +230,47 @@ const Bits = function () {
                             .append(rEl('div', {class: "card-header-actions"})))
                         .append(rEl('div', {class: "card-body"})
                             .append(rEl('form', {class: 'row'})
-                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
-                                    class: 'form-control'
+                                .append(rEl('fieldset',{class:'col-sm-3'})
+                                    .append(rEl('select',{
+                                        class: 'form-control',
+                                        placeholder: 'Choose Mode',
+                                        url: `${app}bit/select/query_mode`,
+                                        name: 'mode'
                                 })))
-                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
-                                    class: 'form-control'
+                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('select',{
+                                    class: 'form-control',
+                                    placeholder: 'Choose Table',
+                                    url: `${app}bit/select/query_table`,
+                                    name: 'table'
                                 })))
-                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
-                                    class: 'form-control'
+                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('select',{
+                                    class: 'form-control',
+                                    placeholder: 'Choose Field',
+                                    url: `${app}bit/select/query_field`,
+                                    name: 'field[]',
+                                    multiple:"multiple"
                                 })))
-                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
-                                    class: 'form-control'
+                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('select',{
+                                    class: 'form-control',
+                                    placeholder: 'Group by',
+                                    url: `${app}bit/select/query_field`,
+                                    name: 'groupby'
                                 })))
-                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
-                                    class: 'form-control'
+                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('select',{
+                                    class: 'form-control',
+                                    placeholder: 'Order By',
+                                    url: `${app}bit/select/query_field`,
+                                    name: 'orderby'
                                 })))
-                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('input',{
-                                    class: 'form-control'
+                                .append(rEl('fieldset',{class:'col-sm-3'}).append(rEl('join',{
+                                    class: 'form-control',
+                                    placeholder: 'Join Table',
+                                    url: `${app}bit/select/query_table`
                                 }))))
-
+                            .append(rEl('button', {onclick:"execute()", class: 'btn btn-primary',text:'execute'}))
 
                         ));
+
                     break;
             }
         };

@@ -386,6 +386,23 @@ class BITController extends Controller
                     ["id" => 'unique', "text" => "UNIQUE"]
                 ];
                 break;
+            case 'query_mode' :
+                $data = [
+                    0,
+                    ["id" => 'select', "text" => "Select"],
+                    ["id" => 'insert', "text" => "Insert"],
+                    ["id" => 'update', "text" => "Update"],
+                    ["id" => 'delete', "text" => "Delete"],
+                ];
+            break;
+            case 'query_table' :
+                $data = DB::table('bittable')->select('bittable_id as id','bittable_name as text')->whereNull('bittable_parent_id')->get();
+                $data->prepend(0);
+            break;
+            case 'query_field' :
+                $data = DB::table('bittable')->select('bittable_id as id','bittable_name as text')->whereNotNull('bittable_parent_id')->get();
+                $data->prepend(0);
+            break;
         }
         return response()->json($data);
     }
@@ -401,5 +418,20 @@ class BITController extends Controller
             }
         }
         return $tree;
+    }
+    public function bitQuery(Request $request){
+        $data = new stdClass();
+        $field = '';
+        $th = [];
+        foreach($request->field as $k => $v){
+            $hm = DB::table('bittable')->where('bittable_id',$v)->first()->bittable_name;
+            $th[] = $hm;
+            $field .= $hm.',';
+        }
+        $data->th = $th;
+        $field = rtrim($field, ',');
+        $table = DB::table('bittable')->where('bittable_id',$request->table)->first()->bittable_name;
+        $data->data = DB::select($request->mode.' '.$field.' FROM '.$table);
+        return response()->json($data);
     }
 }
