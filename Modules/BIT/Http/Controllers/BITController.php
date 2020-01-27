@@ -422,6 +422,7 @@ class BITController extends Controller
     public function bitQuery(Request $request){
         $data = new stdClass();
         $field = '';
+        $option = '';
         $th = [];
         foreach($request->field as $k => $v){
             $hm = DB::table('bittable')->where('bittable_id',$v)->first()->bittable_name;
@@ -431,7 +432,7 @@ class BITController extends Controller
         $data->th = $th;
         $field = rtrim($field, ',');
         $table = DB::table('bittable')->where('bittable_id',$request->table)->first()->bittable_name;
-        $data->data = DB::select($request->mode.' '.$field.' FROM '.$table);
+        $data->data = DB::select($request->mode.' '.$field.' FROM '.$table.' '.$option);
         return response()->json($data);
     }
 }
