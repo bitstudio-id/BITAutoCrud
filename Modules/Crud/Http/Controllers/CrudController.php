@@ -51,15 +51,20 @@ class CrudController extends Controller
     {
         $data = DB::table($table)->updateOrInsert(
             [
-                $table.'_id' => $request->$table.'_id'
+                $table.'_id' => $request[$table.'_id']
             ],
             $request->all()
         );
         return response()->json($data,200);
     }
-    public function delete(Request $request, $table)
+    public function edit($table,$id)
     {
-        $data = DB::table($table)->where($table.'_id','=',$request->id);
+        $data = DB::table($table)->where($table.'_id','=',$id)->first();
+        return response()->json($data,200);
+    }
+    public function delete($table,$id)
+    {
+        $data = DB::table($table)->where($table.'_id','=',$id)->delete();
         return response()->json($data,200);
     }
 }

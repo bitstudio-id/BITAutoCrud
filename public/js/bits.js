@@ -44,8 +44,13 @@ function loadMenu(){
                             </a>
                         </li>`)));
 }
-function dd(p){
-    $.get('/bit/delete/'+p).done(Bits.Route(window.location.hash))
+function dd(p,table=null){
+    if (table === null)
+    {
+        $.get('/bit/delete/'+p).done(Bits.Route(window.location.hash))
+    }else{
+        $.get(`/crud/delete/${table}/${p}`).done(Bits.Crud(window.location.hash))
+    }
 }
 function save(p){
     var resForm=$('form').serializeArray();
@@ -58,6 +63,10 @@ function save(p){
                 Bits.Route(window.location.hash);
             });
     }
+function clearForm(){
+    $('form').find("input, textarea").val("");
+    $('select').val("").trigger('change');
+}
 const Bits = function () {
     let childForm;
     let joinForm;
@@ -86,7 +95,8 @@ const Bits = function () {
                     .append(rEl('div', {class: "card-header-actions"})))
                 .append(rEl('div', {class: "card-body"})
                     .append(rEl('form', {class: 'form row'}))
-                    .append(rEl('button', {class: 'btn btn-primary',text:'save',onclick:`crudSave("${p.substring(1)}")`}))))
+                    .append(rEl('button', {class: 'btn btn-primary',text:'Clear',onclick:`clearForm()`}))
+                    .append(rEl('button', {class: 'btn btn-primary',text:'Save',onclick:`crudSave("${p.substring(1)}")`}))))
             $.get(`${app}crud/get/${window.location.hash.substring(1)}`)
                 .done((data) => {
                     let param = {
@@ -397,8 +407,19 @@ const Bits = function () {
                     orderable: false,
                     visible: true,
                     render: function (data, type, full, meta) {
-                        return `<button onclick="editForm(${Object.values(data)[0]})" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>
-                        <button onclick="dd(${Object.values(data)[0]})" class="btn btn-danger" title="Delete"><i class="fa fa-trash"></i></button>`;
+                        let check= window.location.hash;
+                        let result;
+                        switch (check) {
+                            case '#bitform' :
+                                result = `<button onclick="editForm(${Object.values(data)[0]})" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>`; break;
+                            case '#bittable':
+                                result = `<button onclick="dd(${Object.values(data)[0]})" class="btn btn-danger" title="Delete"><i class="fa fa-trash"></i></button>`; break;
+                            default :
+                                result =`<button onclick="editForm(${Object.values(data)[0]},'${check.substring(1)}')" class="btn btn-info" title="Edit"><i class="fa fa-edit"></i></button>
+                                        <button onclick="dd(${Object.values(data)[0]},'${check.substring(1)}')" class="btn btn-danger" title="Delete"><i class="fa fa-trash"></i></button>`;
+                                break
+                        }
+                        return result;
                     },
                 }
             ];
@@ -547,42 +568,51 @@ function removejoin(p) {
 function removeParent(set,p){
     $(`.form-${set}-${p}`).remove();
 }
-function editForm(p){
+function editForm(p,table = null){
     let rEl = (elem, option) => $("<" + elem + " />", option);
-    $("#ui-view>div").children().length !== 2 ? $('#ui-view>div').first().remove() : null;
-    $('#ui-view').prepend(rEl('div', {class: "card"})
-        .append(rEl('div', {id: "cForm", class: "card-body"})
-            .append(rEl('form', {})
-            ).append(rEl('div', {class:""})
-                .append(rEl('button',{
-                    id:'save',
-                    text:'Save',
-                    class: 'btn btn-primary pull-right',
-                    onclick: `save('${Bits.app}bit/save?id=${p}')`
-                })))));
-    let $this = $('#cForm>form');
-    $.get(`/bit/bitGetDataDetail/${p}`).done((data)=>{
-        $this.text(`Table ${data[0].parent.bittable_name} Form`);
-        $.each(data,(k,v)=>{
-            $this.append(rEl('div',{id:`block-${k}` ,class:'row shadow p-3 mb-5 bg-white rounded'}));
-            $.each(Bits.genForm,(kk,vv)=>{
-                $(`#block-${k}`).append(rEl('fieldset',{
-                    class: `form-group ${kk !== 0 ? 'col-sm-3' : ''}`
-                }).append(rEl('label',{text:
-                    vv.label}))
-                    .append(rEl(vv.input,{
-                    id: `input-${v.bittable_id}-${vv.id}`,
-                    name: `field[${v.bittable_id}][${vv.id}]`,
-                    type: vv.type,
-                    class: 'form-control',
-                    url: vv.url,
-                    value: data[k].form[vv.id]
-                })))
-            });
+    if (window.location.hash!=='#bitform'){
+        $.get(`/crud/edit/${table}/${p}`).done((data)=>{
+            $.each(data,(k,v)=>{
+                $(`#input-${k}`).val(v)
+            })
+        })
+    }else{
+        $("#ui-view>div").children().length !== 2 ? $('#ui-view>div').first().remove() : null;
+        $('#ui-view').prepend(rEl('div', {class: "card"})
+            .append(rEl('div', {id: "cForm", class: "card-body"})
+                .append(rEl('form', {})
+                ).append(rEl('div', {class:""})
+                    .append(rEl('button',{
+                        id:'save',
+                        text:'Save',
+                        class: 'btn btn-primary pull-right',
+                        onclick: `save('${Bits.app}bit/save?id=${p}')`
+                    })))));
+        let $this = $('#cForm>form');
+        $.get(`/bit/bitGetDataDetail/${p}`).done((data)=>{
+            $this.text(`Table ${data[0].parent.bittable_name} Form`);
+            $.each(data,(k,v)=>{
+                $this.append(rEl('div',{id:`block-${k}` ,class:'row shadow p-3 mb-5 bg-white rounded'}));
+                $.each(Bits.genForm,(kk,vv)=>{
+                    $(`#block-${k}`).append(rEl('fieldset',{
+                        class: `form-group ${kk !== 0 ? 'col-sm-3' : ''}`
+                    }).append(rEl('label',{text:
+                        vv.label}))
+                        .append(rEl(vv.input,{
+                            id: `input-${v.bittable_id}-${vv.id}`,
+                            name: `field[${v.bittable_id}][${vv.id}]`,
+                            type: vv.type,
+                            class: 'form-control',
+                            url: vv.url,
+                            value: data[k].form[vv.id]
+                        })))
+                });
 
-        });
-        Bits.rSelect2();
-    }).then();
+            });
+            Bits.rSelect2();
+        }).then();
+    }
+
 }
 function crudSave(p){
     $.ajax({
