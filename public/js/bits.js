@@ -71,7 +71,7 @@ const Bits = function () {
     let childForm;
     let joinForm;
     let genForm;
-    let app = 'http://autocrud.test/';
+    let app = '/';
     let tClasses = (p) => {
         $(p).toggleClass('show')
     };
