@@ -42,10 +42,17 @@ class CrudController extends Controller
             $text = BitTable::where('bittable_id', $request->text)
                 ->first()->bittable_name;
             $data = DB::table($id->parent->bittable_name)->select($id->bittable_name.' as id',$text.' as text')->get();
-            $data->prepend(0);
-            return $data;
-        }
 
+        }else{
+            $data = collect();
+            $nAr = explode(',', $request->enum);
+            foreach ($nAr as $v) {
+                $data->push(['id'=>$v,'text'=>$v]);
+            }
+
+        }
+        $data->prepend(0);
+        return $data;
     }
     public function post(Request $request,$table)
     {

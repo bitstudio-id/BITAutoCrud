@@ -115,6 +115,11 @@ const Bits = function () {
                                             class: 'form-control'
                                         }))
                         }else{
+                            const check = v.form.bitform_url;
+                            let url;
+                            if (check !== null) {
+                                url = check.includes('?') ? `/crud/select${v.form.bitform_url}` : `/crud/select?enum=${v.form.bitform_url}`;
+                            }
                             $('form')
                                 .append(rEl('div',{class:'form-group col-3'})
                                     .append(rEl('label',{text:v.form.bitform_label}))
@@ -124,7 +129,7 @@ const Bits = function () {
                                             name: `${v.bittable_name}`,
                                             type: v.form.bitform_type,
                                             class: 'form-control',
-                                            url:`/crud/select${v.form.bitform_url}`,
+                                            url:url,
                                             placeholder: `${v.form.bitform_label}`
                                         })))
                         }
